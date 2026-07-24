@@ -19,6 +19,26 @@ def _env(name: str, default: str) -> str:
     return value or default
 
 
+# Modelos que Google jubilo. Si un .env viejo los trae, se remapean al vigente
+# en lugar de fallar con 404. Asi un despliegue con configuracion vieja sigue vivo.
+_MODELOS_OBSOLETOS = {
+    "gemini-2.5-flash": "gemini-3.6-flash",
+    "gemini-2.0-flash": "gemini-3.6-flash",
+    "gemini-1.5-flash": "gemini-3.6-flash",
+    "gemini-1.5-pro": "gemini-3.6-flash",
+}
+_EMBED_OBSOLETOS = {
+    "models/text-embedding-004": "gemini-embedding-001",
+    "text-embedding-004": "gemini-embedding-001",
+    "models/embedding-001": "gemini-embedding-001",
+}
+
+
+def _env_model(name: str, default: str, remap: dict[str, str]) -> str:
+    valor = _env(name, default)
+    return remap.get(valor, valor)
+
+
 def _env_int(name: str, default: int) -> int:
     try:
         return int(_env(name, str(default)))
@@ -44,7 +64,7 @@ class Settings:
     local_embed_model: str = field(
         default_factory=lambda: _env("LOCAL_EMBED_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     )
-    gemini_embed_model: str = field(default_factory=lambda: _env("GEMINI_EMBED_MODEL", "gemini-embedding-001"))
+    gemini_embed_model: str = field(default_factory=lambda: _env_model("GEMINI_EMBED_MODEL", "gemini-embedding-001", _EMBED_OBSOLETOS))
 
     # --- Vector store ---
     # "numpy"  -> similitud coseno en memoria, cero dependencias nativas
@@ -56,7 +76,7 @@ class Settings:
     # "gemini" -> Google AI Studio
     # "echo"   -> stub sin red, para probar el cableado sin gastar cuota
     llm: str = field(default_factory=lambda: _env("LLM", "gemini"))
-    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-3.6-flash"))
+    gemini_model: str = field(default_factory=lambda: _env_model("GEMINI_MODEL", "gemini-3.6-flash", _MODELOS_OBSOLETOS))
     gemini_api_key: str = field(default_factory=lambda: _env("GEMINI_API_KEY", ""))
 
     # --- Servidor ---

@@ -49,6 +49,14 @@ a 10 MB, y saneo de nombre para bloquear *path traversal* (`../../etc/passwd` se
 reduce a un nombre plano dentro de `data/`). Un archivo inválido se rechaza con
 mensaje claro; el resto se indexa igual.
 
+### Encender y apagar estrellas
+
+Cada estrella (documento) tiene un interruptor con forma de estrella: encendida
+brilla y Lumora la usa; apagada se atenua pero permanece en el firmamento, fuera
+de las busquedas. Util para acotar de que fuentes puede responder sin borrarlas.
+Ademas se pueden **eliminar** estrellas y **filtrar** el firmamento por nombre o
+por tipo (PDF, CSV, TXT, MD).
+
 ### Interfaz reactiva
 
 El fondo es una constelación de partículas en `<canvas>` cuyo comportamiento

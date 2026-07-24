@@ -76,10 +76,21 @@ class Agent:
         self._tables = tables
         self._top_k = top_k
         self._settings = settings
+        self._desactivadas: set[str] = set()  # estrellas apagadas: en la lista pero fuera de las busquedas
 
     @property
     def tablas(self) -> list[str]:
-        return sorted(self._tables)
+        # Las tablas de estrellas apagadas no cuentan para el camino tabular.
+        return sorted(t for t in self._tables if t not in self._desactivadas)
+
+    def set_activa(self, nombre: str, activa: bool) -> None:
+        if activa:
+            self._desactivadas.discard(nombre)
+        else:
+            self._desactivadas.add(nombre)
+
+    def esta_activa(self, nombre: str) -> bool:
+        return nombre not in self._desactivadas
 
     def __len__(self) -> int:
         return len(self._store)
@@ -87,12 +98,14 @@ class Agent:
     # ---------- camino tabular ----------
 
     def _intentar_tabular(self, pregunta: str) -> Respuesta | None:
-        if not self._tables:
+        # Solo tablas de estrellas encendidas.
+        tablas_activas = {n: t for n, t in self._tables.items() if n not in self._desactivadas}
+        if not tablas_activas:
             return None
         try:
             bruto = self._llm.generate(
                 system="Devuelve solo JSON valido.",
-                user=construir_prompt(pregunta, self._tables),
+                user=construir_prompt(pregunta, tablas_activas),
                 json_mode=True,
             )
         except LLMError as exc:
@@ -104,7 +117,7 @@ class Agent:
             return None
 
         try:
-            resultado = ejecutar_plan(plan, self._tables)
+            resultado = ejecutar_plan(plan, tablas_activas)
         except PlanInvalido as exc:
             log.info("plan rechazado (%s), cayendo a RAG", exc)
             return None
@@ -132,13 +145,13 @@ class Agent:
 
     def _rag(self, pregunta: str) -> Respuesta:
         vector = self._embedder.embed_query(pregunta)
-        hits = self._store.search(vector, self._top_k)
+        # Excluye las estrellas apagadas de la busqueda semantica.
+        hits = self._store.search(vector, self._top_k, excluir=self._desactivadas)
 
         if not hits:
-            return Respuesta(
-                answer="No hay documentos indexados todavia. Coloca archivos en data/ y corre la ingesta.",
-                route="sin_datos",
-            )
+            vacio = "Todas las estrellas están apagadas o no hay ninguna en el firmamento." if self._desactivadas else \
+                    "No hay documentos indexados todavia. Coloca archivos en data/ y corre la ingesta."
+            return Respuesta(answer=vacio, route="sin_datos")
 
         fuentes = [
             Fuente(
@@ -173,11 +186,14 @@ class Agent:
         return self._intentar_tabular(pregunta) or self._rag(pregunta)
 
     def documentos(self) -> list[dict[str, Any]]:
-        """Lista los archivos fuente actualmente indexados, con su conteo de trozos."""
+        """Lista los archivos fuente indexados, su conteo de trozos y si estan activos."""
         from collections import Counter
 
         conteo = Counter(c.source for c in getattr(self._store, "_chunks", []))
-        return [{"nombre": nombre, "fragmentos": n} for nombre, n in sorted(conteo.items())]
+        return [
+            {"nombre": nombre, "fragmentos": n, "activa": nombre not in self._desactivadas}
+            for nombre, n in sorted(conteo.items())
+        ]
 
     def reindex_from(self, store: VectorStore, tables: dict[str, Table]) -> None:
         """Reemplaza en caliente el indice y las tablas. Lo llama el ingestor tras subir archivos."""

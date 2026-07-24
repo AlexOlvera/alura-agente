@@ -145,6 +145,20 @@ def delete(payload: Borrado) -> dict:
     return {"fragmentos": n_chunks, "documentos": agente.documentos()}
 
 
+class Toggle(BaseModel):
+    nombre: str = Field(min_length=1, max_length=300)
+    activa: bool
+
+
+@app.post("/api/toggle")
+def toggle(payload: Toggle) -> dict:
+    """Enciende o apaga una estrella. Apagada = sigue en la lista, fuera de las busquedas."""
+    agente = _agente()
+    agente.set_activa(payload.nombre, payload.activa)
+    # health refleja cuantos fragmentos quedan activos
+    return {"documentos": agente.documentos()}
+
+
 if settings.web_dir.exists():
     app.mount("/static", StaticFiles(directory=settings.web_dir), name="static")
 

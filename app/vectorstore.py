@@ -72,15 +72,20 @@ class NumpyStore:
         self._chunks = list(chunks)
         self._vectores = np.asarray(vectores, dtype=np.float32)
 
-    def search(self, consulta: np.ndarray, k: int) -> list[Hit]:
+    def search(self, consulta: np.ndarray, k: int, excluir: set[str] | None = None) -> list[Hit]:
         if self._vectores is None or not len(self._chunks):
             return []
         puntajes = self._vectores @ np.asarray(consulta, dtype=np.float32)
-        k = min(k, len(puntajes))
-        # argpartition evita ordenar el arreglo completo para quedarse con k.
-        candidatos = np.argpartition(-puntajes, k - 1)[:k]
-        candidatos = candidatos[np.argsort(-puntajes[candidatos])]
-        return [Hit(chunk=self._chunks[i], score=float(puntajes[i])) for i in candidatos]
+        orden = np.argsort(-puntajes)  # de mayor a menor
+        salida: list[Hit] = []
+        for i in orden:
+            chunk = self._chunks[i]
+            if excluir and chunk.source in excluir:
+                continue  # estrella apagada: se ignora
+            salida.append(Hit(chunk=chunk, score=float(puntajes[i])))
+            if len(salida) >= k:
+                break
+        return salida
 
     def save(self) -> None:
         self._vectors_path.parent.mkdir(parents=True, exist_ok=True)

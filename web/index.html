@@ -30,7 +30,12 @@
     <div class="side__body">
       <div class="side__head">
         <h3 class="side__label">Firmamento</h3>
-        <span id="starCount" class="side__badge">—</span>
+        <div class="side__head-r">
+          <span id="starCount" class="side__badge">—</span>
+          <button id="addBtn" class="side__add" type="button" title="Nueva estrella" aria-label="Nueva estrella">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="finder">
@@ -48,7 +53,7 @@
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6">
           <path d="M12 3l2.4 6.3L21 10l-5 4.2L17.5 21 12 17.3 6.5 21 8 14.2 3 10l6.6-.7z" stroke-linejoin="round"/>
         </svg>
-        <span>Nueva estrella</span>
+        <span>Arrastra o elige una estrella</span>
         <input type="file" id="fileInput" multiple accept=".pdf,.csv,.txt,.md" hidden>
       </div>
       <div id="uploadStatus" class="addctx__status" hidden></div>
@@ -56,7 +61,7 @@
 
     <div class="side__foot">
       <span class="side__dot"></span>
-      <span id="sysStat">conectando...</span>
+      <span id="sysStat">Lumora activa</span>
     </div>
   </aside>
 
@@ -87,6 +92,23 @@
     </form>
   </main>
 </div>
+
+<!-- Modal de confirmacion (tema Lumora, reemplaza confirm() nativo) -->
+<div id="modal" class="modal is-hidden" role="dialog" aria-modal="true">
+  <div class="modal__backdrop"></div>
+  <div class="modal__card">
+    <div id="modalIcon" class="modal__icon"></div>
+    <h3 id="modalTitle" class="modal__title"></h3>
+    <p id="modalBody" class="modal__body"></p>
+    <div class="modal__actions">
+      <button id="modalCancel" class="modal__btn modal__btn--ghost" type="button">Cancelar</button>
+      <button id="modalOk" class="modal__btn modal__btn--danger" type="button">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contenedor de avisos (toasts, reemplaza alert() nativo) -->
+<div id="toasts" class="toasts" aria-live="polite"></div>
 
 <script src="/static/app.js"></script>
 </body>

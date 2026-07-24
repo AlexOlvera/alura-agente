@@ -39,6 +39,62 @@
     },
   };
 
+  /* ---------------- UI: modal de confirmacion (reemplaza confirm) ---------------- */
+  const Modal = {
+    _resolve:null,
+    init() {
+      this.el=document.getElementById("modal");
+      this.icon=document.getElementById("modalIcon");
+      this.title=document.getElementById("modalTitle");
+      this.body=document.getElementById("modalBody");
+      this.ok=document.getElementById("modalOk");
+      this.cancel=document.getElementById("modalCancel");
+      this.ok.addEventListener("click",()=>this._close(true));
+      this.cancel.addEventListener("click",()=>this._close(false));
+      this.el.querySelector(".modal__backdrop").addEventListener("click",()=>this._close(false));
+      document.addEventListener("keydown",(e)=>{ if(!this.el.classList.contains("is-hidden")&&e.key==="Escape") this._close(false); });
+    },
+    _ICONS:{
+      danger:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      info:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1" stroke-linecap="round"/></svg>',
+    },
+    /** Devuelve una promesa que resuelve true/false. opts: {title, body(html), okText, tone} */
+    confirm(opts) {
+      return new Promise((res)=>{
+        this._resolve=res;
+        const tone=opts.tone||"danger";
+        this.icon.className="modal__icon "+tone;
+        this.icon.innerHTML=this._ICONS[tone]||this._ICONS.danger;
+        this.title.textContent=opts.title||"¿Confirmar?";
+        this.body.innerHTML=opts.body||"";
+        this.ok.textContent=opts.okText||"Aceptar";
+        this.ok.className="modal__btn "+(tone==="danger"?"modal__btn--danger":"modal__btn--primary");
+        this.el.classList.remove("is-hidden");
+        this.ok.focus();
+      });
+    },
+    _close(val){ this.el.classList.add("is-hidden"); if(this._resolve){ this._resolve(val); this._resolve=null; } },
+  };
+
+  /* ---------------- UI: toasts (reemplaza alert) ---------------- */
+  const Toast = {
+    init(){ this.box=document.getElementById("toasts"); },
+    _ICONS:{
+      ok:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      err:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01" stroke-linecap="round"/></svg>',
+      info:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1" stroke-linecap="round"/></svg>',
+    },
+    show(msg, tone="info", ms=3200) {
+      const t=document.createElement("div");
+      t.className="toast toast--"+tone;
+      t.innerHTML=`<span class="toast__ico">${this._ICONS[tone]||this._ICONS.info}</span><span></span>`;
+      t.querySelector("span:last-child").textContent=msg;
+      this.box.append(t);
+      setTimeout(()=>{ t.classList.add("is-out"); setTimeout(()=>t.remove(),300); }, ms);
+    },
+    ok(m){ this.show(m,"ok"); }, err(m){ this.show(m,"err",4200); }, info(m){ this.show(m,"info"); },
+  };
+
   /* ---------------- Logo (controlador de estado) ---------------- */
   const Logo = {
     mount(elId) { const e = document.getElementById(elId); if (e) e.innerHTML = dom.svgLogo(); return e; },
@@ -55,13 +111,13 @@
   /* ---------------- Constellation (fondo canvas reactivo) ---------------- */
   const Constellation = {
     canvas:null, ctx:null, particles:[], raf:null, t:0, aiState:"idle", docCount:0,
-    cfg:{ speedMod:.1, connDist:110, connOp:.14, gravity:0, pulse:.01, converging:false },
+    cfg:{ speedMod:.15, connDist:135, connOp:.28, gravity:0, pulse:.012, converging:false },
 
     CONFIGS: {
-      processing:{ speedMod:1.5, connDist:130, connOp:.32, gravity:.0075, pulse:.05, converging:false },
-      responding:{ speedMod:3,   connDist:150, connOp:.5,  gravity:.03,   pulse:.1,  converging:true  },
-      listening: { speedMod:.2,  connDist:110, connOp:.2,  gravity:.005,  pulse:.03, converging:false },
-      idle:      { speedMod:.15, connDist:110, connOp:.14, gravity:0,     pulse:.012, converging:false },
+      processing:{ speedMod:1.5, connDist:150, connOp:.5,  gravity:.0075, pulse:.05, converging:false },
+      responding:{ speedMod:3,   connDist:170, connOp:.7,  gravity:.03,   pulse:.1,  converging:true  },
+      listening: { speedMod:.2,  connDist:135, connOp:.38, gravity:.005,  pulse:.03, converging:false },
+      idle:      { speedMod:.18, connDist:135, connOp:.28, gravity:0,     pulse:.014, converging:false },
     },
 
     init(canvasId) {
@@ -189,6 +245,12 @@
       if(!r.ok){ const det=d&&d.detail; throw new Error(typeof det==="string"?det:`HTTP ${r.status}`); }
       return d;
     },
+    async toggle(nombre, activa){
+      const r=await fetch("/api/toggle",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nombre,activa})});
+      const d=await r.json().catch(()=>null);
+      if(!r.ok){ const det=d&&d.detail; throw new Error(typeof det==="string"?det:`HTTP ${r.status}`); }
+      return d;
+    },
   };
 
   /* ---------------- Component (piezas reutilizables) ---------------- */
@@ -206,25 +268,37 @@
   const extIcon = (nombre)=> extKind(nombre)==="data" ? ICONS.data : ICONS.doc;
 
   const Component = {
-    DocCard(doc, onDelete) {
+    DocCard(doc, onDelete, onToggle) {
       const kind = extKind(doc.nombre);
+      const activa = doc.activa !== false;
       const del = dom.el("button",{class:"card__del",type:"button",title:"Eliminar estrella","aria-label":`Eliminar ${doc.nombre}`,
         html:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke-linecap="round" stroke-linejoin="round"/></svg>',
         onClick:(e)=>{ e.stopPropagation(); onDelete(doc.nombre, del); }});
-      // "fragmentos" con tooltip explicativo
-      const frag = dom.el("span",{class:"frag",tabindex:"0"},[
-        document.createTextNode(`${doc.fragmentos} fragmentos`),
-        dom.el("span",{class:"frag__tip",html:`Cada estrella se divide en <strong>fragmentos</strong>: los pedazos en que Lumora la lee para encontrar respuestas. Más fragmentos = más contenido.`}),
-      ]);
+
+      // Estrellita-toggle: brilla si activa, opaca si apagada. ES el boton.
+      const starSvg='<svg class="starbtn__star" viewBox="0 0 24 24" width="15" height="15" stroke-width="1.5"><path d="M12 3l2.4 6.3L21 10l-5 4.2L17.5 21 12 17.3 6.5 21 8 14.2 3 10l6.6-.7z" stroke-linejoin="round"/></svg>';
+      const star = dom.el("button",{class:"starbtn "+(activa?"is-on":"is-off"),type:"button",
+        title:activa?"Estrella encendida · clic para apagar":"Estrella apagada · clic para encender",
+        html:starSvg+`<span class="starbtn__lbl">${activa?"Brillando":"Apagada"}</span>`,
+        onClick:(e)=>{ e.stopPropagation(); onToggle(doc.nombre, !activa, star); }});
+
+      // "fragmentos" con tooltip posicionado por JS (fixed) para no empujar scroll
+      const tip = dom.el("span",{class:"frag__tip",html:`Cada estrella se divide en <strong>fragmentos</strong>: los pedazos en que Lumora la lee para encontrar respuestas. Más fragmentos = más contenido.`});
+      const frag = dom.el("span",{class:"frag",tabindex:"0"},[ document.createTextNode(`${doc.fragmentos} fragmentos`), tip ]);
+      const showTip=()=>{ const r=frag.getBoundingClientRect(); tip.style.left=Math.max(12,Math.min(r.left, window.innerWidth-222))+"px"; tip.style.top=(r.top-tip.offsetHeight-8)+"px"; tip.classList.add("is-shown"); };
+      const hideTip=()=>tip.classList.remove("is-shown");
+      frag.addEventListener("mouseenter",()=>{ tip.classList.add("is-shown"); requestAnimationFrame(showTip); });
+      frag.addEventListener("mouseleave",hideTip);
+      frag.addEventListener("focus",()=>{ tip.classList.add("is-shown"); requestAnimationFrame(showTip); });
+      frag.addEventListener("blur",hideTip);
+
+      const name = dom.el("div",{class:"card__name"+(activa?"":" is-off"),text:doc.nombre,title:doc.nombre});
       return dom.el("li",{},[ dom.el("div",{class:"card"},[
         del,
         dom.el("div",{class:"card__row"},[
           dom.el("div",{class:`card__ico ${kind}`, html:extIcon(doc.nombre)}),
-          dom.el("div",{class:"card__body"},[
-            dom.el("div",{class:"card__name",text:doc.nombre,title:doc.nombre}),
-            dom.el("div",{class:"card__meta"},[ frag,
-              dom.el("span",{class:"card__ok",html:ICONS.check+"<span>Comprendido</span>"}),
-            ]),
+          dom.el("div",{class:"card__body"},[ name,
+            dom.el("div",{class:"card__meta"},[ frag, star ]),
           ]),
         ]),
       ])]);
@@ -256,21 +330,24 @@
         dom.el("tbody",{},rows.map((r)=>dom.el("tr",{},cols.map((c)=>dom.el("td",{text:r[c]})))))
       ])]);
     },
-    Cite(s){
-      const body=[ dom.el("div",{class:"cite-row__ref"},[
-        document.createTextNode(s.source+" "),
-        dom.el("span",{class:"cite-row__loc",text:`· ${s.locator}`}),
-      ])];
-      if(s.excerpt) body.push(dom.el("p",{class:"cite-row__ex",text:s.excerpt}));
-      return dom.el("div",{class:"cite-row"},[
-        dom.el("span",{class:"cite-row__n",text:s.n}),
-        dom.el("div",{class:"cite-row__body"},body),
-        s.score?dom.el("span",{class:"cite-row__score",text:s.score.toFixed(2)}):null,
+    Origin(s){
+      return dom.el("div",{class:"origin",title:`${s.source} · ${s.locator}`},[
+        dom.el("span",{class:"origin__n",text:s.n}),
+        dom.el("span",{class:"origin__ref",text:s.source}),
+        s.score?dom.el("span",{class:"origin__score",text:s.score.toFixed(2)}):null,
       ]);
     },
-    Cites(sources){
+    Origins(sources){
       if(!sources||!sources.length) return null;
-      return dom.el("div",{class:"cites"},[ dom.el("p",{class:"cites__t",text:"Fuentes"}), ...sources.map(Component.Cite) ]);
+      const n=sources.length;
+      const list=dom.el("div",{class:"origins__list"}, sources.map(Component.Origin));
+      const chev=dom.el("span",{class:"origins__chev",html:'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'});
+      const wrap=dom.el("div",{class:"origins"});
+      const toggle=dom.el("button",{class:"origins__toggle",type:"button",onClick:()=>wrap.classList.toggle("is-open")},[
+        chev, dom.el("span",{text:`${n} estrella${n===1?"":"s"} de origen`}),
+      ]);
+      wrap.append(toggle,list);
+      return wrap;
     },
     AiMsg() {
       const logo=dom.el("div",{class:"logo ai__logo",'data-size':"sm"}); logo.innerHTML=dom.svgLogo(); logo.classList.add("logo-processing");
@@ -281,10 +358,14 @@
         resolve(r){
           logo.classList.remove("logo-processing"); logo.classList.add("logo-responding");
           dom.clear(content);
-          content.append(Component.Meta(r.route,(r.sources||[]).length));
-          content.append(Component.Answer(r.answer));
-          const t=Component.Table(r.table); if(t) content.append(t);
-          const c=Component.Cites(r.sources); if(c) content.append(c);
+          // Recuadro que envuelve meta + texto + tabla (suma sin quitar el logo lateral)
+          const bubble=dom.el("div",{class:"ai__bubble"});
+          bubble.append(Component.Meta(r.route,(r.sources||[]).length));
+          bubble.append(Component.Answer(r.answer));
+          const t=Component.Table(r.table); if(t) bubble.append(t);
+          content.append(bubble);
+          // Estrellas de origen: colapsadas por defecto, fuera del recuadro
+          const o=Component.Origins(r.sources); if(o) content.append(o);
         },
         fail(msg){ logo.classList.remove("logo-processing"); dom.clear(content); content.append(dom.el("div",{class:"err-box",text:msg})); },
       };
@@ -318,6 +399,7 @@
       Logo.mount("brandLogo"); Logo.mount("heroLogo");
       Constellation.init("constellation");
       Constellation.setState("idle"); Logo.setState("idle");
+      Modal.init(); Toast.init();
       this._cacheEls(); this._wire(); this._renderHero();
       this.health(); this.refreshDocs();
     },
@@ -330,6 +412,7 @@
       this.input=document.getElementById("q");
       this.send=document.getElementById("send");
       this.dropzone=document.getElementById("dropzone");
+      this.addBtn=document.getElementById("addBtn");
       this.fileInput=document.getElementById("fileInput");
       this.uploadStatus=document.getElementById("uploadStatus");
       this.docList=document.getElementById("docList");
@@ -345,6 +428,7 @@
     _wire() {
       this.form.addEventListener("submit",(e)=>{ e.preventDefault(); this.ask(this.input.value); });
       this.dropzone.addEventListener("click",()=>this.fileInput.click());
+      if(this.addBtn) this.addBtn.addEventListener("click",()=>this.fileInput.click());
       this.dropzone.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();this.fileInput.click();} });
       this.fileInput.addEventListener("change",()=>{ if(this.fileInput.files.length) this.upload(this.fileInput.files); this.fileInput.value=""; });
       ["dragenter","dragover"].forEach((ev)=>this.dropzone.addEventListener(ev,(e)=>{e.preventDefault();this.dropzone.classList.add("is-drag");}));
@@ -359,7 +443,7 @@
     },
 
     async health() {
-      try { const s=await api.health(); this.sysStat.textContent=`${s.chunks} fragmentos · ${s.llm}`; }
+      try { const s=await api.health(); const n=s.chunks||0; this.sysStat.textContent=`${n} fragmento${n===1?"":"s"} · en línea`; }
       catch { this.sysStat.textContent="sin conexión"; this.sideDot.classList.add("is-err"); }
     },
 
@@ -398,17 +482,36 @@
     _renderDocs() {
       const vis=this._visibleDocs();
       dom.clear(this.docList);
-      vis.forEach((d)=>this.docList.append(Component.DocCard(d,(nombre,btn)=>this.deleteStar(nombre,btn))));
+      vis.forEach((d)=>this.docList.append(Component.DocCard(d,
+        (nombre,btn)=>this.deleteStar(nombre,btn),
+        (nombre,activa,btn)=>this.toggleStar(nombre,activa,btn))));
       this.emptyDocs.classList.toggle("is-hidden", vis.length>0 || this._docs.length===0);
+    },
+
+    async toggleStar(nombre, activa, btn) {
+      if(btn) btn.disabled=true;
+      try {
+        const res=await api.toggle(nombre, activa);
+        this._setDocs(res.documentos);
+        this.health();
+        Toast.info(activa?`"${nombre}" encendida`:`"${nombre}" apagada`);
+      } catch(err) {
+        Toast.err(`No se pudo cambiar la estrella: ${err.message}`);
+      }
     },
 
     async deleteStar(nombre, btn) {
       if(this.busy) return;
-      if(!confirm(`¿Eliminar la estrella "${nombre}"? Esto la quita del firmamento.`)) return;
+      const ok=await Modal.confirm({
+        title:"Eliminar estrella",
+        body:`¿Seguro que quieres eliminar <strong>${dom.esc(nombre)}</strong>? Se quita del firmamento y no se puede deshacer.`,
+        okText:"Eliminar", tone:"danger",
+      });
+      if(!ok) return;
       this.busy=true; if(btn) btn.disabled=true;
       Constellation.setState("processing"); Logo.setState("processing");
-      try { const res=await api.remove(nombre); this._setDocs(res.documentos); this.health(); }
-      catch(err) { alert(`No se pudo eliminar: ${err.message}`); }
+      try { const res=await api.remove(nombre); this._setDocs(res.documentos); this.health(); Toast.ok(`"${nombre}" eliminada`); }
+      catch(err) { Toast.err(`No se pudo eliminar: ${err.message}`); }
       finally { this.busy=false; Constellation.setState("idle"); Logo.setState("idle"); }
     },
 
