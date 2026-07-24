@@ -55,13 +55,13 @@
   /* ---------------- Constellation (fondo canvas reactivo) ---------------- */
   const Constellation = {
     canvas:null, ctx:null, particles:[], raf:null, t:0, aiState:"idle", docCount:0,
-    cfg:{ speedMod:.1, connDist:70, connOp:.03, gravity:0, pulse:.01, converging:false },
+    cfg:{ speedMod:.1, connDist:110, connOp:.14, gravity:0, pulse:.01, converging:false },
 
     CONFIGS: {
-      processing:{ speedMod:1.5, connDist:100, connOp:.15, gravity:.0075, pulse:.05, converging:false },
-      responding:{ speedMod:3,   connDist:120, connOp:.4,  gravity:.03,   pulse:.1,  converging:true  },
-      listening: { speedMod:.2,  connDist:80,  connOp:.08, gravity:.005,  pulse:.03, converging:false },
-      idle:      { speedMod:.1,  connDist:70,  connOp:.03, gravity:0,     pulse:.01, converging:false },
+      processing:{ speedMod:1.5, connDist:130, connOp:.32, gravity:.0075, pulse:.05, converging:false },
+      responding:{ speedMod:3,   connDist:150, connOp:.5,  gravity:.03,   pulse:.1,  converging:true  },
+      listening: { speedMod:.2,  connDist:110, connOp:.2,  gravity:.005,  pulse:.03, converging:false },
+      idle:      { speedMod:.15, connDist:110, connOp:.14, gravity:0,     pulse:.012, converging:false },
     },
 
     init(canvasId) {
@@ -183,6 +183,12 @@
       if(!r.ok){ const det=d&&d.detail; const msg=typeof det==="string"?det:(det&&det.mensaje)||`HTTP ${r.status}`; throw Object.assign(new Error(msg),{errores:(det&&det.errores)||[]}); }
       return d;
     },
+    async remove(nombre){
+      const r=await fetch("/api/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nombre})});
+      const d=await r.json().catch(()=>null);
+      if(!r.ok){ const det=d&&d.detail; throw new Error(typeof det==="string"?det:`HTTP ${r.status}`); }
+      return d;
+    },
   };
 
   /* ---------------- Component (piezas reutilizables) ---------------- */
@@ -200,20 +206,31 @@
   const extIcon = (nombre)=> extKind(nombre)==="data" ? ICONS.data : ICONS.doc;
 
   const Component = {
-    DocCard(doc) {
+    DocCard(doc, onDelete) {
       const kind = extKind(doc.nombre);
+      const del = dom.el("button",{class:"card__del",type:"button",title:"Eliminar estrella","aria-label":`Eliminar ${doc.nombre}`,
+        html:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        onClick:(e)=>{ e.stopPropagation(); onDelete(doc.nombre, del); }});
+      // "fragmentos" con tooltip explicativo
+      const frag = dom.el("span",{class:"frag",tabindex:"0"},[
+        document.createTextNode(`${doc.fragmentos} fragmentos`),
+        dom.el("span",{class:"frag__tip",html:`Cada estrella se divide en <strong>fragmentos</strong>: los pedazos en que Lumora la lee para encontrar respuestas. Más fragmentos = más contenido.`}),
+      ]);
       return dom.el("li",{},[ dom.el("div",{class:"card"},[
+        del,
         dom.el("div",{class:"card__row"},[
           dom.el("div",{class:`card__ico ${kind}`, html:extIcon(doc.nombre)}),
           dom.el("div",{class:"card__body"},[
             dom.el("div",{class:"card__name",text:doc.nombre,title:doc.nombre}),
-            dom.el("div",{class:"card__meta"},[
-              dom.el("span",{text:`${doc.fragmentos} frag.`}),
+            dom.el("div",{class:"card__meta"},[ frag,
               dom.el("span",{class:"card__ok",html:ICONS.check+"<span>Comprendido</span>"}),
             ]),
           ]),
         ]),
       ])]);
+    },
+    Filter(label, value, active, onPick) {
+      return dom.el("button",{class:"chipf"+(active?" is-on":""),type:"button",text:label,onClick:()=>onPick(value)});
     },
     HeroCard(icon, text, onPick) {
       return dom.el("button",{class:"hero__card",type:"button",onClick:()=>onPick(text)},[
@@ -316,19 +333,24 @@
       this.fileInput=document.getElementById("fileInput");
       this.uploadStatus=document.getElementById("uploadStatus");
       this.docList=document.getElementById("docList");
+      this.emptyDocs=document.getElementById("emptyDocs");
+      this.starCount=document.getElementById("starCount");
+      this.search=document.getElementById("search");
+      this.filters=document.getElementById("filters");
       this.sysStat=document.getElementById("sysStat");
       this.sideDot=document.querySelector(".side__dot");
+      this._docs=[]; this._filter="all"; this._query="";
     },
 
     _wire() {
       this.form.addEventListener("submit",(e)=>{ e.preventDefault(); this.ask(this.input.value); });
-      // carga de archivos
       this.dropzone.addEventListener("click",()=>this.fileInput.click());
       this.dropzone.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();this.fileInput.click();} });
       this.fileInput.addEventListener("change",()=>{ if(this.fileInput.files.length) this.upload(this.fileInput.files); this.fileInput.value=""; });
       ["dragenter","dragover"].forEach((ev)=>this.dropzone.addEventListener(ev,(e)=>{e.preventDefault();this.dropzone.classList.add("is-drag");}));
       ["dragleave","drop"].forEach((ev)=>this.dropzone.addEventListener(ev,(e)=>{e.preventDefault();this.dropzone.classList.remove("is-drag");}));
       this.dropzone.addEventListener("drop",(e)=>{ const f=e.dataTransfer.files; if(f&&f.length) this.upload(f); });
+      this.search.addEventListener("input",()=>{ this._query=this.search.value.trim().toLowerCase(); this._renderDocs(); });
     },
 
     _renderHero() {
@@ -342,12 +364,52 @@
     },
 
     async refreshDocs() {
-      try {
-        const { documents }=await api.documents();
-        dom.clear(this.docList);
-        documents.forEach((d)=>this.docList.append(Component.DocCard(d)));
-        Constellation.setDocs(documents.length);
-      } catch {/* no critico */}
+      try { const { documents }=await api.documents(); this._setDocs(documents); }
+      catch {/* no critico */}
+    },
+
+    _setDocs(docs) {
+      this._docs=docs;
+      Constellation.setDocs(docs.length);
+      this.starCount.textContent=docs.length;
+      this._renderFilters();
+      this._renderDocs();
+    },
+
+    _renderFilters() {
+      const tipos=[...new Set(this._docs.map((d)=>extKind(d.nombre)))].sort();
+      dom.clear(this.filters);
+      if(tipos.length<2) return;  // sin variedad, sin filtros
+      const LABELS={ pdf:"PDF", data:"CSV", txt:"TXT", md:"MD" };
+      this.filters.append(Component.Filter("Todas","all",this._filter==="all",(v)=>this._pickFilter(v)));
+      tipos.forEach((t)=>this.filters.append(Component.Filter(LABELS[t]||t.toUpperCase(),t,this._filter===t,(v)=>this._pickFilter(v))));
+    },
+
+    _pickFilter(v){ this._filter=v; this._renderFilters(); this._renderDocs(); },
+
+    _visibleDocs() {
+      return this._docs.filter((d)=>{
+        const okType=this._filter==="all"||extKind(d.nombre)===this._filter;
+        const okQuery=!this._query||d.nombre.toLowerCase().includes(this._query);
+        return okType&&okQuery;
+      });
+    },
+
+    _renderDocs() {
+      const vis=this._visibleDocs();
+      dom.clear(this.docList);
+      vis.forEach((d)=>this.docList.append(Component.DocCard(d,(nombre,btn)=>this.deleteStar(nombre,btn))));
+      this.emptyDocs.classList.toggle("is-hidden", vis.length>0 || this._docs.length===0);
+    },
+
+    async deleteStar(nombre, btn) {
+      if(this.busy) return;
+      if(!confirm(`¿Eliminar la estrella "${nombre}"? Esto la quita del firmamento.`)) return;
+      this.busy=true; if(btn) btn.disabled=true;
+      Constellation.setState("processing"); Logo.setState("processing");
+      try { const res=await api.remove(nombre); this._setDocs(res.documentos); this.health(); }
+      catch(err) { alert(`No se pudo eliminar: ${err.message}`); }
+      finally { this.busy=false; Constellation.setState("idle"); Logo.setState("idle"); }
     },
 
     /* ---- carga ---- */
@@ -357,15 +419,13 @@
       this.busy=true; this.dropzone.classList.add("is-busy");
       Constellation.setState("processing"); Logo.setState("processing");
       const nombres=[...fileList].map((f)=>f.name).join(", ");
-      this._upStatus("busy",`Comprendiendo: ${nombres}…`);
+      this._upStatus("busy",`Encendiendo: ${nombres}…`);
       try {
         const res=await api.upload(fileList);
         const ok=res.guardados.map((g)=>g.nombre).join(", ");
-        if(res.errores&&res.errores.length) this._upStatus("warn",`Añadido: ${ok}. Omitido: ${res.errores.join(" · ")}`);
-        else this._upStatus("ok",`✓ ${ok} · ${res.fragmentos} fragmentos en total`);
-        dom.clear(this.docList);
-        res.documentos.forEach((d)=>this.docList.append(Component.DocCard(d)));
-        Constellation.setDocs(res.documentos.length);
+        if(res.errores&&res.errores.length) this._upStatus("warn",`Encendida: ${ok}. Omitido: ${res.errores.join(" · ")}`);
+        else this._upStatus("ok",`✨ ${ok} · ${res.fragmentos} fragmentos en el firmamento`);
+        this._setDocs(res.documentos);
         this.health();
       } catch(err) {
         const extra=err.errores&&err.errores.length?" · "+err.errores.join(" · "):"";

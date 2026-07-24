@@ -68,12 +68,14 @@ class Agent:
         llm: LLMClient,
         tables: dict[str, Table],
         top_k: int = 5,
+        settings=None,
     ) -> None:
         self._store = store
         self._embedder = embedder
         self._llm = llm
         self._tables = tables
         self._top_k = top_k
+        self._settings = settings
 
     @property
     def tablas(self) -> list[str]:
@@ -182,6 +184,15 @@ class Agent:
         self._store = store
         self._tables = tables
 
+    def vaciar(self) -> None:
+        """Deja el agente sin conocimiento. Para cuando se borra la ultima estrella."""
+        if self._settings is not None:
+            self._store = build_vector_store(self._settings)
+        elif hasattr(self._store, "_chunks"):
+            self._store._chunks = []
+            self._store._vectores = None
+        self._tables = {}
+
 
 def build_agent(settings) -> Agent:
     """Levanta el agente desde el indice ya construido en disco."""
@@ -197,6 +208,7 @@ def build_agent(settings) -> Agent:
         llm=build_llm(settings),
         tables={t.name: t for t in tablas},
         top_k=settings.top_k,
+        settings=settings,
     )
 
 

@@ -44,7 +44,7 @@ class Settings:
     local_embed_model: str = field(
         default_factory=lambda: _env("LOCAL_EMBED_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     )
-    gemini_embed_model: str = field(default_factory=lambda: _env("GEMINI_EMBED_MODEL", "models/text-embedding-004"))
+    gemini_embed_model: str = field(default_factory=lambda: _env("GEMINI_EMBED_MODEL", "gemini-embedding-001"))
 
     # --- Vector store ---
     # "numpy"  -> similitud coseno en memoria, cero dependencias nativas
@@ -56,7 +56,7 @@ class Settings:
     # "gemini" -> Google AI Studio
     # "echo"   -> stub sin red, para probar el cableado sin gastar cuota
     llm: str = field(default_factory=lambda: _env("LLM", "gemini"))
-    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-2.5-flash"))
+    gemini_model: str = field(default_factory=lambda: _env("GEMINI_MODEL", "gemini-3.6-flash"))
     gemini_api_key: str = field(default_factory=lambda: _env("GEMINI_API_KEY", ""))
 
     # --- Servidor ---

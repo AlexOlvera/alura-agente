@@ -77,3 +77,19 @@ def guardar(data_dir: Path, nombre_original: str, contenido: bytes) -> ArchivoGu
 
     destino.write_bytes(contenido)
     return ArchivoGuardado(nombre=destino.name, bytes=len(contenido))
+
+
+def eliminar(data_dir: Path, nombre: str) -> None:
+    """Borra un archivo de data/. Saneo obligatorio: nunca sale de la carpeta.
+
+    Igual que al subir, el nombre se reduce a algo plano antes de resolverlo. Sin
+    esto, un nombre como '../otra/cosa' borraria fuera de data/. Ademas se verifica
+    que la ruta final siga dentro de data/ tras resolver symlinks.
+    """
+    objetivo = (data_dir / nombre_seguro(nombre)).resolve()
+    raiz = data_dir.resolve()
+    if raiz not in objetivo.parents and objetivo != raiz:
+        raise UploadError("ruta fuera de la carpeta de datos")
+    if not objetivo.is_file():
+        raise UploadError(f"'{nombre}': no existe")
+    objetivo.unlink()
