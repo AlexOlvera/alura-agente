@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumora · Descubre tu conocimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div id="splash" class="splash">
+  <canvas id="splashCanvas" class="splash__canvas"></canvas>
+  <div class="splash__center">
+    <div id="splashLogo" class="logo logo-processing" data-size="lg"></div>
+    <p id="splashText" class="splash__text">Comprendiendo conocimiento…</p>
+  </div>
+</div>
+
+<div id="app" class="app is-hidden">
+
+  <aside class="side">
+    <div class="side__brand">
+      <div id="brandLogo" class="logo" data-size="sm"></div>
+      <span class="side__name">LUMORA</span>
+    </div>
+
+    <div class="side__body">
+      <h3 class="side__label">Base de conocimiento</h3>
+      <ul id="docList" class="docs"></ul>
+
+      <div id="dropzone" class="addctx" tabindex="0" role="button" aria-label="Anadir documentos">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+        </svg>
+        <span>Anadir contexto</span>
+        <input type="file" id="fileInput" multiple accept=".pdf,.csv,.txt,.md" hidden>
+      </div>
+      <div id="uploadStatus" class="addctx__status" hidden></div>
+    </div>
+
+    <div class="side__foot">
+      <span class="side__dot"></span>
+      <span id="sysStat">conectando...</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <canvas id="constellation" class="constellation"></canvas>
+    <div class="main__veil"></div>
+
+    <div class="main__inner">
+      <section id="hero" class="hero">
+        <div id="heroLogo" class="logo" data-size="xl"></div>
+        <h1 class="hero__title">Que quieres descubrir?</h1>
+        <div id="heroCards" class="hero__cards"></div>
+      </section>
+
+      <section id="thread" class="thread is-hidden" aria-label="Conversacion"></section>
+    </div>
+
+    <form id="composer" class="composer" autocomplete="off">
+      <div class="composer__box">
+        <input id="q" class="composer__input" type="text" maxlength="2000"
+               placeholder="Pregunta lo que quieras sobre tus documentos..." required>
+        <button id="send" class="composer__send" type="submit" aria-label="Enviar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

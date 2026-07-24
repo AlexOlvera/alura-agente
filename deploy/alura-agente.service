@@ -1,0 +1,16 @@
+[Unit]
+Description=Alura Agente - consulta documental con RAG
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__APP_USER__
+WorkingDirectory=/opt/alura-agente
+EnvironmentFile=/opt/alura-agente/.env
+ExecStart=/opt/alura-agente/.venv/bin/python -m uvicorn app.api:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

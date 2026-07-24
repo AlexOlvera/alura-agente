@@ -1,0 +1,6 @@
+# Caddy pide y renueva el certificado de Let's Encrypt solo.
+# __HOST__ lo sustituye setup.sh con <IP-publica>.sslip.io
+__HOST__ {
+    encode gzip
+    reverse_proxy 127.0.0.1:8000
+}

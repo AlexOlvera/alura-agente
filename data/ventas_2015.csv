@@ -1,0 +1,541 @@
+fecha,producto,region,cantidad,precio_unitario
+2015-01-05,Webcam HD,Bajio,11,311.06
+2015-01-12,Monitor 27 4K,Norte,15,1367.1
+2015-01-03,Laptop Pro 14,Bajio,7,360.67
+2015-01-18,Monitor 27 4K,Bajio,1,2101.76
+2015-01-08,Monitor 27 4K,Norte,10,1546.75
+2015-01-08,Laptop Pro 14,Norte,9,2174.48
+2015-01-14,Docking USB-C,Centro,9,470.92
+2015-01-18,Docking USB-C,Centro,2,1537.68
+2015-01-12,Mouse ergonomico,Norte,9,1837.85
+2015-01-20,Laptop Pro 14,Centro,8,1764.92
+2015-01-25,Silla ergonomica,Sur,8,1546.79
+2015-01-12,Audifonos ANC,Sur,4,2027.07
+2015-01-03,Mouse ergonomico,Sur,9,1338.77
+2015-01-24,Webcam HD,Bajio,5,1600.61
+2015-01-04,Monitor 27 4K,Bajio,3,1941.42
+2015-01-16,Teclado mecanico,Bajio,1,2412.64
+2015-01-25,Monitor 27 4K,Sur,6,1799.18
+2015-01-19,Audifonos ANC,Bajio,2,2131.93
+2015-01-16,Docking USB-C,Norte,1,1881.67
+2015-01-21,Docking USB-C,Bajio,5,1848.24
+2015-01-01,Webcam HD,Bajio,6,586.51
+2015-01-16,Monitor 27 4K,Norte,4,1966.94
+2015-01-24,Teclado mecanico,Centro,7,1099.18
+2015-01-03,Audifonos ANC,Centro,8,1123.78
+2015-01-05,Docking USB-C,Bajio,14,1465.5
+2015-01-12,Silla ergonomica,Bajio,4,547.12
+2015-01-05,Teclado mecanico,Centro,11,736.67
+2015-01-27,Audifonos ANC,Centro,5,848.44
+2015-01-14,Teclado mecanico,Sur,10,1502.58
+2015-01-23,Teclado mecanico,Norte,8,2268.93
+2015-01-13,Silla ergonomica,Bajio,7,438.14
+2015-01-02,Silla ergonomica,Centro,2,2464.74
+2015-01-06,Audifonos ANC,Norte,6,1581.67
+2015-01-01,Monitor 27 4K,Centro,9,433.37
+2015-01-20,Webcam HD,Norte,2,2210.96
+2015-01-05,Silla ergonomica,Sur,6,1585.24
+2015-01-04,Audifonos ANC,Norte,14,1322.56
+2015-01-16,Audifonos ANC,Bajio,5,397.53
+2015-01-24,Monitor 27 4K,Sur,12,808.94
+2015-01-17,Teclado mecanico,Norte,4,2387.27
+2015-02-05,Webcam HD,Norte,13,1414.65
+2015-02-23,Monitor 27 4K,Sur,9,1043.41
+2015-02-12,Teclado mecanico,Centro,9,1445.6
+2015-02-21,Webcam HD,Centro,10,2066.48
+2015-02-26,Mouse ergonomico,Centro,14,1121.57
+2015-02-07,Mouse ergonomico,Bajio,6,1881.31
+2015-02-26,Laptop Pro 14,Sur,8,796.1
+2015-02-15,Webcam HD,Sur,6,385.24
+2015-02-08,Monitor 27 4K,Bajio,4,976.8
+2015-02-20,Audifonos ANC,Norte,8,2291.16
+2015-02-26,Webcam HD,Norte,14,1719.35
+2015-02-26,Silla ergonomica,Centro,8,2244.73
+2015-02-26,Silla ergonomica,Sur,2,2041.89
+2015-02-15,Silla ergonomica,Bajio,12,2377.63
+2015-02-06,Teclado mecanico,Centro,1,547.65
+2015-02-26,Audifonos ANC,Centro,10,2100.97
+2015-02-22,Audifonos ANC,Sur,3,1461.92
+2015-02-01,Teclado mecanico,Norte,13,2433.05
+2015-02-17,Monitor 27 4K,Centro,7,2469.06
+2015-02-27,Mouse ergonomico,Centro,1,779.22
+2015-02-17,Docking USB-C,Centro,13,1548.81
+2015-02-18,Docking USB-C,Bajio,14,501.47
+2015-02-15,Webcam HD,Bajio,14,2310.76
+2015-02-18,Teclado mecanico,Centro,9,1374.26
+2015-02-25,Audifonos ANC,Centro,10,209.04
+2015-02-06,Teclado mecanico,Centro,8,1623.93
+2015-02-18,Monitor 27 4K,Norte,6,1769.36
+2015-02-26,Audifonos ANC,Norte,15,1488.68
+2015-02-07,Mouse ergonomico,Sur,1,1976.2
+2015-02-18,Audifonos ANC,Norte,13,2256.23
+2015-02-15,Monitor 27 4K,Sur,10,2438.73
+2015-02-23,Mouse ergonomico,Sur,8,1368.76
+2015-02-17,Audifonos ANC,Centro,12,1403.38
+2015-02-18,Docking USB-C,Centro,14,1229.31
+2015-02-04,Silla ergonomica,Bajio,8,926.75
+2015-02-14,Mouse ergonomico,Norte,4,1739.79
+2015-02-25,Monitor 27 4K,Centro,12,1679.95
+2015-02-05,Webcam HD,Sur,15,515.69
+2015-02-08,Audifonos ANC,Norte,7,2235.35
+2015-02-22,Teclado mecanico,Centro,3,1824.54
+2015-03-11,Silla ergonomica,Bajio,4,1020.21
+2015-03-24,Monitor 27 4K,Sur,1,977.35
+2015-03-15,Audifonos ANC,Norte,7,962.45
+2015-03-17,Docking USB-C,Norte,2,2465.69
+2015-03-04,Mouse ergonomico,Norte,5,825.42
+2015-03-09,Teclado mecanico,Centro,14,1171.18
+2015-03-13,Docking USB-C,Centro,9,2314.09
+2015-03-23,Audifonos ANC,Sur,2,841.84
+2015-03-14,Teclado mecanico,Norte,5,2358.2
+2015-03-26,Monitor 27 4K,Sur,2,1598.81
+2015-03-03,Mouse ergonomico,Sur,14,479.86
+2015-03-11,Laptop Pro 14,Bajio,15,2305.48
+2015-03-02,Teclado mecanico,Centro,2,2429.19
+2015-03-02,Docking USB-C,Centro,4,2344.17
+2015-03-17,Docking USB-C,Centro,5,1225.08
+2015-03-09,Teclado mecanico,Sur,13,241.78
+2015-03-02,Docking USB-C,Norte,1,1886.08
+2015-03-17,Mouse ergonomico,Bajio,4,2349.68
+2015-03-22,Monitor 27 4K,Bajio,11,1338.5
+2015-03-17,Silla ergonomica,Sur,12,694.92
+2015-03-11,Mouse ergonomico,Centro,14,2228.43
+2015-03-13,Teclado mecanico,Sur,1,2125.07
+2015-03-03,Laptop Pro 14,Sur,7,575.47
+2015-03-22,Monitor 27 4K,Bajio,14,1363.67
+2015-03-20,Docking USB-C,Centro,12,874.03
+2015-03-06,Audifonos ANC,Centro,5,1225.4
+2015-03-12,Docking USB-C,Sur,9,944.13
+2015-03-10,Laptop Pro 14,Centro,6,620.8
+2015-03-13,Webcam HD,Norte,8,841.54
+2015-03-08,Mouse ergonomico,Norte,2,807.59
+2015-03-05,Monitor 27 4K,Bajio,10,295.83
+2015-03-10,Laptop Pro 14,Sur,11,735.46
+2015-03-22,Teclado mecanico,Bajio,13,950.11
+2015-03-05,Audifonos ANC,Sur,12,1623.03
+2015-03-02,Teclado mecanico,Bajio,12,1812.42
+2015-03-17,Teclado mecanico,Norte,14,1778.89
+2015-03-03,Mouse ergonomico,Norte,1,506.11
+2015-03-04,Webcam HD,Bajio,14,1238.19
+2015-03-21,Laptop Pro 14,Norte,11,1422.32
+2015-03-16,Mouse ergonomico,Sur,1,1250.98
+2015-04-24,Monitor 27 4K,Norte,11,1409.78
+2015-04-09,Audifonos ANC,Norte,14,810.78
+2015-04-08,Mouse ergonomico,Bajio,8,2144.72
+2015-04-16,Monitor 27 4K,Sur,13,307.52
+2015-04-03,Mouse ergonomico,Centro,6,784.06
+2015-04-20,Docking USB-C,Centro,1,1309.57
+2015-04-09,Audifonos ANC,Norte,12,700.69
+2015-04-10,Audifonos ANC,Sur,8,1271.56
+2015-04-18,Monitor 27 4K,Centro,5,2449.69
+2015-04-01,Audifonos ANC,Sur,8,375.87
+2015-04-09,Audifonos ANC,Bajio,4,2308.08
+2015-04-03,Mouse ergonomico,Norte,3,1919.22
+2015-04-12,Docking USB-C,Centro,10,2086.5
+2015-04-04,Docking USB-C,Sur,4,1345.14
+2015-04-13,Audifonos ANC,Norte,3,208.26
+2015-04-22,Audifonos ANC,Bajio,7,894.49
+2015-04-14,Teclado mecanico,Sur,7,926.98
+2015-04-01,Webcam HD,Sur,13,978.03
+2015-04-04,Silla ergonomica,Centro,12,226.96
+2015-04-09,Docking USB-C,Sur,2,1103.67
+2015-04-12,Monitor 27 4K,Bajio,13,832.86
+2015-04-09,Laptop Pro 14,Norte,1,2119.75
+2015-04-21,Docking USB-C,Centro,4,2433.39
+2015-04-17,Silla ergonomica,Sur,4,1978.32
+2015-04-01,Silla ergonomica,Bajio,15,2214.17
+2015-04-24,Mouse ergonomico,Norte,1,2346.97
+2015-04-15,Silla ergonomica,Centro,11,2199.8
+2015-04-02,Audifonos ANC,Centro,3,1286.02
+2015-04-10,Webcam HD,Sur,5,1899.77
+2015-04-13,Docking USB-C,Centro,5,1311.32
+2015-04-04,Silla ergonomica,Centro,11,571.81
+2015-04-17,Mouse ergonomico,Bajio,9,706.06
+2015-04-25,Webcam HD,Bajio,7,521.07
+2015-04-08,Mouse ergonomico,Norte,3,986.5
+2015-04-11,Monitor 27 4K,Centro,6,794.22
+2015-04-01,Mouse ergonomico,Bajio,7,1151.93
+2015-04-13,Mouse ergonomico,Sur,6,1929.86
+2015-04-09,Audifonos ANC,Sur,3,1779.53
+2015-04-03,Mouse ergonomico,Sur,15,771.44
+2015-04-21,Silla ergonomica,Bajio,7,2394.07
+2015-05-05,Laptop Pro 14,Norte,7,1831.88
+2015-05-19,Audifonos ANC,Bajio,1,368.22
+2015-05-15,Audifonos ANC,Centro,13,450.81
+2015-05-05,Teclado mecanico,Norte,14,1859.99
+2015-05-03,Audifonos ANC,Norte,1,1999.29
+2015-05-19,Mouse ergonomico,Norte,11,1844.55
+2015-05-21,Teclado mecanico,Sur,9,1663.47
+2015-05-04,Monitor 27 4K,Norte,5,1406.2
+2015-05-13,Mouse ergonomico,Sur,4,2018.12
+2015-05-01,Laptop Pro 14,Sur,8,840.79
+2015-05-21,Webcam HD,Centro,8,1410.44
+2015-05-01,Mouse ergonomico,Bajio,12,1694.19
+2015-05-01,Laptop Pro 14,Centro,8,2235.15
+2015-05-03,Silla ergonomica,Sur,4,1734.92
+2015-05-08,Webcam HD,Bajio,1,1800.39
+2015-05-12,Silla ergonomica,Bajio,4,215.53
+2015-05-24,Docking USB-C,Norte,4,1340.1
+2015-05-10,Mouse ergonomico,Centro,4,1269.76
+2015-05-25,Docking USB-C,Sur,2,2389.43
+2015-05-20,Audifonos ANC,Centro,15,713.65
+2015-05-22,Silla ergonomica,Norte,10,536.68
+2015-05-02,Silla ergonomica,Centro,1,2440.48
+2015-05-14,Teclado mecanico,Norte,12,338.31
+2015-05-15,Silla ergonomica,Sur,12,460.37
+2015-05-06,Monitor 27 4K,Sur,4,626.68
+2015-05-02,Audifonos ANC,Sur,11,1868.37
+2015-05-11,Webcam HD,Bajio,3,450.6
+2015-05-09,Monitor 27 4K,Norte,6,1166.42
+2015-05-18,Monitor 27 4K,Centro,7,1020.25
+2015-05-27,Docking USB-C,Bajio,2,313.29
+2015-05-07,Audifonos ANC,Sur,9,2314.86
+2015-05-11,Mouse ergonomico,Sur,12,2263.08
+2015-05-21,Laptop Pro 14,Bajio,4,2067.2
+2015-05-02,Silla ergonomica,Bajio,1,1267.32
+2015-05-09,Laptop Pro 14,Centro,12,344.56
+2015-05-12,Webcam HD,Sur,6,2402.69
+2015-05-09,Laptop Pro 14,Sur,15,833.95
+2015-05-24,Laptop Pro 14,Norte,1,2099.84
+2015-05-16,Monitor 27 4K,Bajio,13,1088.98
+2015-05-14,Docking USB-C,Bajio,3,2334.63
+2015-06-01,Teclado mecanico,Sur,14,1791.85
+2015-06-20,Teclado mecanico,Centro,6,2180.86
+2015-06-12,Audifonos ANC,Norte,9,653.82
+2015-06-08,Teclado mecanico,Bajio,2,1693.96
+2015-06-18,Audifonos ANC,Sur,3,2454.59
+2015-06-03,Monitor 27 4K,Sur,10,393.39
+2015-06-14,Monitor 27 4K,Bajio,12,2435.87
+2015-06-08,Teclado mecanico,Centro,7,1260.12
+2015-06-24,Mouse ergonomico,Norte,13,2134.0
+2015-06-09,Docking USB-C,Sur,6,784.33
+2015-06-07,Docking USB-C,Bajio,4,627.19
+2015-06-05,Mouse ergonomico,Sur,15,2287.41
+2015-06-11,Mouse ergonomico,Norte,7,778.8
+2015-06-17,Mouse ergonomico,Centro,11,2059.42
+2015-06-02,Audifonos ANC,Norte,1,1291.95
+2015-06-27,Mouse ergonomico,Bajio,15,1059.92
+2015-06-08,Docking USB-C,Norte,1,636.02
+2015-06-03,Mouse ergonomico,Sur,9,2192.09
+2015-06-20,Audifonos ANC,Sur,13,1988.89
+2015-06-04,Laptop Pro 14,Sur,4,286.15
+2015-06-05,Webcam HD,Norte,4,2499.71
+2015-06-20,Laptop Pro 14,Centro,14,226.17
+2015-06-14,Webcam HD,Sur,3,1628.33
+2015-06-07,Monitor 27 4K,Norte,13,1339.94
+2015-06-03,Audifonos ANC,Bajio,2,2030.44
+2015-06-21,Teclado mecanico,Norte,11,576.49
+2015-06-14,Docking USB-C,Sur,11,907.47
+2015-06-10,Laptop Pro 14,Sur,7,1157.82
+2015-06-21,Webcam HD,Centro,7,1874.47
+2015-06-01,Mouse ergonomico,Bajio,15,560.1
+2015-06-27,Monitor 27 4K,Norte,7,1528.93
+2015-06-15,Webcam HD,Centro,3,234.12
+2015-06-21,Teclado mecanico,Bajio,2,1517.59
+2015-06-24,Webcam HD,Centro,3,1000.27
+2015-06-17,Teclado mecanico,Centro,15,354.32
+2015-06-16,Silla ergonomica,Centro,5,491.3
+2015-06-16,Laptop Pro 14,Sur,1,1597.58
+2015-06-03,Silla ergonomica,Centro,11,2007.4
+2015-06-20,Mouse ergonomico,Bajio,10,2146.61
+2015-06-06,Audifonos ANC,Centro,1,1119.41
+2015-07-13,Teclado mecanico,Sur,2,543.77
+2015-07-02,Mouse ergonomico,Norte,11,2127.87
+2015-07-13,Monitor 27 4K,Bajio,9,2152.72
+2015-07-21,Docking USB-C,Bajio,5,1540.04
+2015-07-13,Silla ergonomica,Sur,8,1358.23
+2015-07-01,Teclado mecanico,Norte,10,2468.12
+2015-07-08,Audifonos ANC,Bajio,13,1622.72
+2015-07-27,Audifonos ANC,Centro,13,1288.4
+2015-07-03,Monitor 27 4K,Centro,6,1190.38
+2015-07-26,Monitor 27 4K,Bajio,9,1373.37
+2015-07-02,Laptop Pro 14,Centro,2,2320.89
+2015-07-25,Webcam HD,Norte,1,1929.74
+2015-07-21,Silla ergonomica,Centro,1,2171.26
+2015-07-07,Monitor 27 4K,Centro,15,1331.3
+2015-07-22,Teclado mecanico,Centro,2,2115.98
+2015-07-06,Docking USB-C,Sur,15,1611.12
+2015-07-05,Audifonos ANC,Sur,9,2417.95
+2015-07-07,Audifonos ANC,Sur,10,1363.82
+2015-07-12,Webcam HD,Norte,4,618.82
+2015-07-21,Teclado mecanico,Sur,11,954.0
+2015-07-06,Silla ergonomica,Sur,2,1967.01
+2015-07-21,Laptop Pro 14,Sur,14,1241.99
+2015-07-09,Monitor 27 4K,Bajio,12,2034.64
+2015-07-13,Docking USB-C,Sur,10,536.25
+2015-07-25,Webcam HD,Norte,8,729.11
+2015-07-10,Laptop Pro 14,Sur,5,1670.25
+2015-07-24,Webcam HD,Norte,12,277.72
+2015-07-10,Teclado mecanico,Bajio,7,1379.16
+2015-07-05,Laptop Pro 14,Bajio,4,1608.79
+2015-07-01,Laptop Pro 14,Norte,1,1504.38
+2015-07-04,Docking USB-C,Sur,9,715.8
+2015-07-19,Docking USB-C,Centro,4,1042.34
+2015-07-06,Audifonos ANC,Centro,1,2354.16
+2015-07-23,Mouse ergonomico,Centro,8,420.35
+2015-07-28,Teclado mecanico,Sur,7,2066.61
+2015-07-02,Laptop Pro 14,Sur,10,1684.89
+2015-07-20,Audifonos ANC,Bajio,4,579.73
+2015-07-02,Laptop Pro 14,Norte,9,258.02
+2015-07-08,Teclado mecanico,Centro,1,2297.01
+2015-07-01,Monitor 27 4K,Centro,3,1150.31
+2015-08-27,Silla ergonomica,Centro,9,911.58
+2015-08-21,Docking USB-C,Norte,15,1865.9
+2015-08-23,Audifonos ANC,Norte,7,2142.19
+2015-08-03,Audifonos ANC,Bajio,3,719.68
+2015-08-09,Monitor 27 4K,Centro,11,289.28
+2015-08-24,Webcam HD,Sur,12,320.83
+2015-08-22,Silla ergonomica,Sur,5,1676.61
+2015-08-03,Mouse ergonomico,Norte,3,798.85
+2015-08-27,Mouse ergonomico,Centro,3,1916.15
+2015-08-07,Webcam HD,Bajio,6,1582.83
+2015-08-28,Silla ergonomica,Bajio,8,2131.34
+2015-08-28,Laptop Pro 14,Norte,7,2398.1
+2015-08-19,Mouse ergonomico,Sur,13,687.52
+2015-08-19,Monitor 27 4K,Centro,3,275.7
+2015-08-04,Monitor 27 4K,Centro,6,2448.04
+2015-08-01,Laptop Pro 14,Norte,3,1793.04
+2015-08-23,Laptop Pro 14,Norte,12,307.38
+2015-08-07,Webcam HD,Norte,15,2195.92
+2015-08-04,Silla ergonomica,Centro,4,667.27
+2015-08-02,Laptop Pro 14,Norte,14,1928.28
+2015-08-16,Docking USB-C,Norte,3,425.08
+2015-08-10,Mouse ergonomico,Sur,6,1174.66
+2015-08-12,Laptop Pro 14,Sur,15,849.96
+2015-08-11,Webcam HD,Bajio,14,861.59
+2015-08-26,Laptop Pro 14,Bajio,1,1203.83
+2015-08-12,Monitor 27 4K,Bajio,12,310.67
+2015-08-23,Mouse ergonomico,Norte,10,2085.57
+2015-08-14,Teclado mecanico,Norte,9,664.68
+2015-08-01,Laptop Pro 14,Sur,8,420.08
+2015-08-16,Teclado mecanico,Sur,14,1384.82
+2015-08-10,Teclado mecanico,Centro,12,732.51
+2015-08-04,Teclado mecanico,Norte,8,2012.2
+2015-08-21,Monitor 27 4K,Sur,6,418.84
+2015-08-24,Silla ergonomica,Norte,7,2243.43
+2015-08-12,Laptop Pro 14,Centro,5,805.35
+2015-08-13,Teclado mecanico,Centro,8,491.83
+2015-08-12,Laptop Pro 14,Sur,9,557.25
+2015-08-22,Audifonos ANC,Sur,3,1265.26
+2015-08-19,Docking USB-C,Centro,3,968.32
+2015-08-17,Mouse ergonomico,Centro,5,893.47
+2015-09-24,Teclado mecanico,Centro,4,1863.27
+2015-09-06,Webcam HD,Centro,6,2398.32
+2015-09-24,Docking USB-C,Norte,3,2413.49
+2015-09-07,Monitor 27 4K,Bajio,3,2462.82
+2015-09-24,Docking USB-C,Sur,7,829.79
+2015-09-21,Monitor 27 4K,Norte,5,674.82
+2015-09-15,Silla ergonomica,Norte,1,1117.75
+2015-09-23,Silla ergonomica,Centro,9,2456.03
+2015-09-15,Docking USB-C,Norte,3,791.59
+2015-09-01,Silla ergonomica,Centro,15,2161.65
+2015-09-28,Silla ergonomica,Centro,11,1861.11
+2015-09-22,Mouse ergonomico,Centro,11,485.7
+2015-09-11,Silla ergonomica,Sur,11,1811.5
+2015-09-08,Silla ergonomica,Bajio,12,1839.06
+2015-09-09,Teclado mecanico,Bajio,8,1246.95
+2015-09-17,Silla ergonomica,Centro,15,1705.33
+2015-09-13,Laptop Pro 14,Bajio,15,2441.62
+2015-09-09,Laptop Pro 14,Centro,3,1847.3
+2015-09-17,Mouse ergonomico,Sur,2,2148.47
+2015-09-18,Audifonos ANC,Centro,12,1294.19
+2015-09-21,Laptop Pro 14,Sur,9,988.56
+2015-09-07,Audifonos ANC,Centro,7,1381.72
+2015-09-24,Monitor 27 4K,Sur,11,330.22
+2015-09-13,Docking USB-C,Bajio,1,230.61
+2015-09-14,Silla ergonomica,Sur,10,809.86
+2015-09-10,Mouse ergonomico,Bajio,9,2434.45
+2015-09-15,Silla ergonomica,Centro,3,497.39
+2015-09-26,Monitor 27 4K,Centro,8,1677.06
+2015-09-27,Mouse ergonomico,Centro,6,1731.89
+2015-09-15,Silla ergonomica,Sur,13,1461.02
+2015-09-25,Teclado mecanico,Bajio,6,2002.26
+2015-09-09,Mouse ergonomico,Bajio,11,783.16
+2015-09-22,Silla ergonomica,Centro,8,206.2
+2015-09-12,Docking USB-C,Centro,11,894.19
+2015-09-16,Audifonos ANC,Bajio,10,1665.79
+2015-09-05,Webcam HD,Sur,14,1085.75
+2015-09-27,Monitor 27 4K,Sur,13,2368.01
+2015-09-21,Webcam HD,Norte,11,226.4
+2015-09-21,Monitor 27 4K,Sur,5,1598.86
+2015-09-28,Teclado mecanico,Centro,3,1985.5
+2015-10-26,Webcam HD,Centro,4,2279.4
+2015-10-20,Teclado mecanico,Norte,11,2273.78
+2015-10-07,Docking USB-C,Bajio,12,690.13
+2015-10-24,Monitor 27 4K,Bajio,11,2230.17
+2015-10-09,Monitor 27 4K,Bajio,4,2102.22
+2015-10-16,Audifonos ANC,Norte,8,1274.32
+2015-10-23,Teclado mecanico,Bajio,4,1345.8
+2015-10-06,Laptop Pro 14,Sur,8,1800.54
+2015-10-22,Audifonos ANC,Sur,14,1271.25
+2015-10-14,Silla ergonomica,Norte,3,1665.19
+2015-10-01,Laptop Pro 14,Norte,11,1894.04
+2015-10-26,Webcam HD,Norte,9,1313.59
+2015-10-02,Teclado mecanico,Centro,12,1155.86
+2015-10-11,Teclado mecanico,Norte,14,1715.75
+2015-10-16,Webcam HD,Centro,5,1200.94
+2015-10-09,Silla ergonomica,Norte,14,865.04
+2015-10-27,Webcam HD,Bajio,7,967.56
+2015-10-28,Docking USB-C,Sur,4,1705.49
+2015-10-11,Monitor 27 4K,Centro,6,1840.32
+2015-10-19,Teclado mecanico,Norte,13,2491.94
+2015-10-24,Silla ergonomica,Bajio,9,1520.3
+2015-10-10,Silla ergonomica,Norte,1,306.71
+2015-10-20,Audifonos ANC,Norte,13,1351.94
+2015-10-20,Silla ergonomica,Centro,11,1749.51
+2015-10-07,Monitor 27 4K,Norte,11,1657.26
+2015-10-04,Teclado mecanico,Centro,14,285.05
+2015-10-21,Monitor 27 4K,Norte,6,2205.42
+2015-10-26,Teclado mecanico,Sur,9,1833.31
+2015-10-06,Docking USB-C,Bajio,1,932.5
+2015-10-19,Silla ergonomica,Norte,8,1505.27
+2015-10-27,Laptop Pro 14,Norte,13,2063.76
+2015-10-15,Silla ergonomica,Norte,1,1763.91
+2015-10-16,Teclado mecanico,Bajio,9,434.7
+2015-10-07,Audifonos ANC,Centro,11,235.72
+2015-10-01,Laptop Pro 14,Norte,14,402.72
+2015-10-05,Monitor 27 4K,Bajio,1,833.53
+2015-10-15,Mouse ergonomico,Centro,15,315.32
+2015-10-24,Teclado mecanico,Norte,5,1645.83
+2015-10-15,Audifonos ANC,Sur,15,2417.93
+2015-10-01,Laptop Pro 14,Norte,1,2231.66
+2015-11-13,Monitor 27 4K,Sur,5,1877.72
+2015-11-28,Teclado mecanico,Bajio,10,337.49
+2015-11-19,Webcam HD,Bajio,8,1756.82
+2015-11-26,Teclado mecanico,Norte,6,2393.95
+2015-11-21,Teclado mecanico,Bajio,8,1087.2
+2015-11-09,Audifonos ANC,Sur,5,843.79
+2015-11-28,Webcam HD,Norte,14,547.58
+2015-11-19,Docking USB-C,Bajio,15,766.06
+2015-11-22,Silla ergonomica,Bajio,10,1974.32
+2015-11-26,Mouse ergonomico,Bajio,5,1783.67
+2015-11-09,Webcam HD,Sur,7,561.75
+2015-11-10,Laptop Pro 14,Centro,13,2248.41
+2015-11-09,Teclado mecanico,Bajio,6,1429.48
+2015-11-26,Audifonos ANC,Bajio,4,2011.69
+2015-11-10,Mouse ergonomico,Norte,11,1109.64
+2015-11-09,Mouse ergonomico,Norte,13,1085.44
+2015-11-18,Monitor 27 4K,Sur,13,344.05
+2015-11-19,Silla ergonomica,Sur,15,2116.65
+2015-11-16,Webcam HD,Centro,4,689.2
+2015-11-06,Monitor 27 4K,Sur,6,1529.09
+2015-11-13,Webcam HD,Centro,4,302.57
+2015-11-12,Audifonos ANC,Norte,6,1655.31
+2015-11-05,Monitor 27 4K,Sur,10,269.83
+2015-11-17,Docking USB-C,Norte,2,277.23
+2015-11-19,Audifonos ANC,Centro,5,2328.64
+2015-11-14,Docking USB-C,Norte,8,1964.67
+2015-11-09,Teclado mecanico,Norte,6,662.27
+2015-11-13,Teclado mecanico,Norte,1,317.29
+2015-11-28,Webcam HD,Bajio,8,2378.57
+2015-11-28,Monitor 27 4K,Bajio,15,475.81
+2015-11-09,Monitor 27 4K,Sur,10,736.38
+2015-11-22,Monitor 27 4K,Bajio,3,1231.19
+2015-11-12,Teclado mecanico,Centro,12,709.96
+2015-11-09,Laptop Pro 14,Sur,1,2276.34
+2015-11-27,Laptop Pro 14,Norte,5,2008.66
+2015-11-02,Audifonos ANC,Norte,3,930.67
+2015-11-07,Laptop Pro 14,Sur,10,1560.37
+2015-11-16,Monitor 27 4K,Sur,6,791.12
+2015-11-12,Monitor 27 4K,Bajio,7,587.73
+2015-11-26,Mouse ergonomico,Centro,15,1758.58
+2015-12-15,Laptop Pro 14,Centro,13,282.83
+2015-12-03,Mouse ergonomico,Sur,15,1922.9
+2015-12-04,Audifonos ANC,Bajio,14,249.99
+2015-12-15,Monitor 27 4K,Sur,6,2093.04
+2015-12-04,Audifonos ANC,Sur,3,963.55
+2015-12-06,Laptop Pro 14,Bajio,9,2245.43
+2015-12-28,Audifonos ANC,Centro,5,1162.0
+2015-12-05,Mouse ergonomico,Norte,5,1513.28
+2015-12-11,Docking USB-C,Centro,5,1329.32
+2015-12-15,Webcam HD,Bajio,2,552.75
+2015-12-21,Laptop Pro 14,Centro,9,1298.15
+2015-12-04,Docking USB-C,Sur,13,663.73
+2015-12-14,Webcam HD,Sur,4,2327.68
+2015-12-13,Monitor 27 4K,Sur,7,2261.26
+2015-12-27,Laptop Pro 14,Sur,3,2450.85
+2015-12-15,Laptop Pro 14,Sur,9,522.33
+2015-12-26,Laptop Pro 14,Sur,3,1028.23
+2015-12-14,Laptop Pro 14,Centro,5,1514.08
+2015-12-27,Teclado mecanico,Centro,9,1972.03
+2015-12-07,Teclado mecanico,Norte,14,401.07
+2015-12-25,Audifonos ANC,Sur,3,673.87
+2015-12-19,Mouse ergonomico,Sur,4,223.08
+2015-12-27,Silla ergonomica,Norte,9,2064.49
+2015-12-10,Webcam HD,Bajio,2,235.52
+2015-12-05,Audifonos ANC,Sur,4,627.92
+2015-12-02,Webcam HD,Centro,12,1053.68
+2015-12-12,Laptop Pro 14,Bajio,9,364.09
+2015-12-23,Webcam HD,Centro,14,2109.1
+2015-12-25,Webcam HD,Bajio,10,1928.03
+2015-12-10,Laptop Pro 14,Norte,12,1338.05
+2015-12-17,Laptop Pro 14,Centro,1,760.14
+2015-12-08,Monitor 27 4K,Centro,3,436.15
+2015-12-18,Docking USB-C,Norte,1,421.88
+2015-12-09,Mouse ergonomico,Norte,14,1578.62
+2015-12-17,Audifonos ANC,Centro,12,1221.69
+2015-12-28,Webcam HD,Norte,12,611.63
+2015-12-04,Docking USB-C,Bajio,8,1547.57
+2015-12-04,Docking USB-C,Norte,2,1133.0
+2015-12-18,Teclado mecanico,Centro,14,722.18
+2015-12-24,Audifonos ANC,Bajio,3,2380.85
+2015-12-01,Monitor 27 4K,Bajio,16,8999.0
+2015-12-20,Monitor 27 4K,Norte,16,8999.0
+2015-12-02,Monitor 27 4K,Sur,15,8999.0
+2015-12-13,Monitor 27 4K,Centro,15,8999.0
+2015-12-23,Monitor 27 4K,Bajio,19,8999.0
+2015-12-26,Monitor 27 4K,Sur,16,8999.0
+2015-12-28,Monitor 27 4K,Norte,15,8999.0
+2015-12-17,Monitor 27 4K,Centro,20,8999.0
+2015-12-12,Monitor 27 4K,Centro,16,8999.0
+2015-12-22,Monitor 27 4K,Norte,15,8999.0
+2015-12-04,Monitor 27 4K,Centro,11,8999.0
+2015-12-11,Monitor 27 4K,Bajio,13,8999.0
+2015-12-17,Monitor 27 4K,Norte,13,8999.0
+2015-12-05,Monitor 27 4K,Bajio,16,8999.0
+2015-12-25,Monitor 27 4K,Bajio,20,8999.0
+2015-12-02,Monitor 27 4K,Norte,10,8999.0
+2015-12-28,Monitor 27 4K,Sur,20,8999.0
+2015-12-20,Monitor 27 4K,Sur,20,8999.0
+2015-12-18,Monitor 27 4K,Norte,19,8999.0
+2015-12-04,Monitor 27 4K,Sur,11,8999.0
+2015-12-17,Monitor 27 4K,Norte,16,8999.0
+2015-12-08,Monitor 27 4K,Norte,14,8999.0
+2015-12-04,Monitor 27 4K,Sur,15,8999.0
+2015-12-21,Monitor 27 4K,Centro,11,8999.0
+2015-12-02,Monitor 27 4K,Sur,11,8999.0
+2015-12-15,Monitor 27 4K,Centro,17,8999.0
+2015-12-04,Monitor 27 4K,Centro,14,8999.0
+2015-12-14,Monitor 27 4K,Sur,14,8999.0
+2015-12-08,Monitor 27 4K,Norte,18,8999.0
+2015-12-10,Monitor 27 4K,Bajio,19,8999.0
+2015-12-23,Monitor 27 4K,Centro,20,8999.0
+2015-12-13,Monitor 27 4K,Centro,18,8999.0
+2015-12-23,Monitor 27 4K,Sur,17,8999.0
+2015-12-18,Monitor 27 4K,Sur,19,8999.0
+2015-12-16,Monitor 27 4K,Bajio,14,8999.0
+2015-12-01,Monitor 27 4K,Centro,15,8999.0
+2015-12-08,Monitor 27 4K,Centro,18,8999.0
+2015-12-18,Monitor 27 4K,Bajio,19,8999.0
+2015-12-13,Monitor 27 4K,Norte,15,8999.0
+2015-12-06,Monitor 27 4K,Centro,15,8999.0
+2015-12-18,Monitor 27 4K,Sur,17,8999.0
+2015-12-09,Monitor 27 4K,Sur,13,8999.0
+2015-12-10,Monitor 27 4K,Norte,10,8999.0
+2015-12-06,Monitor 27 4K,Norte,19,8999.0
+2015-12-28,Monitor 27 4K,Sur,17,8999.0
+2015-12-22,Monitor 27 4K,Norte,18,8999.0
+2015-12-13,Monitor 27 4K,Bajio,15,8999.0
+2015-12-24,Monitor 27 4K,Norte,18,8999.0
+2015-12-08,Monitor 27 4K,Centro,16,8999.0
+2015-12-11,Monitor 27 4K,Sur,12,8999.0
+2015-12-22,Monitor 27 4K,Centro,19,8999.0
+2015-12-20,Monitor 27 4K,Sur,18,8999.0
+2015-12-04,Monitor 27 4K,Bajio,14,8999.0
+2015-12-26,Monitor 27 4K,Centro,16,8999.0
+2015-12-28,Monitor 27 4K,Norte,10,8999.0
+2015-12-14,Monitor 27 4K,Norte,17,8999.0
+2015-12-13,Monitor 27 4K,Centro,16,8999.0
+2015-12-28,Monitor 27 4K,Sur,19,8999.0
+2015-12-20,Monitor 27 4K,Norte,16,8999.0
+2015-12-28,Monitor 27 4K,Bajio,17,8999.0
