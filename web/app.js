@@ -265,47 +265,56 @@
     run(onDone) {
       const cv=document.getElementById("splashCanvas"), ctx=cv.getContext("2d");
       let W=cv.width=innerWidth, H=cv.height=innerHeight, raf, collapsing=false;
-      const ps=Array.from({length:180},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*1.5+.5}));
-      const draw=()=>{
+      // Réplica exacta del ParticleSplash original: 200 partículas con alpha propio
+      const ps=Array.from({length:200},()=>({
+        x:Math.random()*W, y:Math.random()*H,
+        vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5,
+        radius:Math.random()*1.5+.5, alpha:Math.random(),
+        targetX:W/2, targetY:H/2,
+      }));
+      const render=()=>{
         ctx.fillStyle="rgba(9,11,18,0.2)"; ctx.fillRect(0,0,W,H);
-        // mover primero
-        ps.forEach((p)=>{
-          if(collapsing){ p.x+=(W/2-p.x)*.05; p.y+=(H/2-p.y)*.05; }
-          else { p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; }
-        });
-        // dibujar conexiones (como en la constelación del fondo)
-        const dist = collapsing ? 140 : 110;
-        for(let a=0;a<ps.length;a++){
-          for(let b=a+1;b<ps.length;b++){
-            const dx=ps[a].x-ps[b].x, dy=ps[a].y-ps[b].y, d=Math.hypot(dx,dy);
-            if(d<dist){
-              const op=(collapsing?.5:.28)*(1-d/dist);
-              ctx.strokeStyle=`rgba(140,107,255,${op})`;
-              ctx.lineWidth=collapsing?1.2:.6;
-              ctx.beginPath(); ctx.moveTo(ps[a].x,ps[a].y); ctx.lineTo(ps[b].x,ps[b].y); ctx.stroke();
+        ps.forEach((p,i)=>{
+          if(collapsing){
+            // converge al centro Y se desvanece (como el original)
+            p.x += (p.targetX-p.x)*.05;
+            p.y += (p.targetY-p.y)*.05;
+            p.alpha = Math.max(0, p.alpha-.02);
+          } else {
+            p.x += p.vx; p.y += p.vy;
+            if(p.x<0||p.x>W) p.vx*=-1;
+            if(p.y<0||p.y>H) p.vy*=-1;
+            // conexiones SOLO cuando NO colapsa, cian sutil (0.1), distancia 100
+            for(let j=0;j<ps.length;j++){
+              if(i===j) continue;
+              const p2=ps[j], d=Math.hypot(p.x-p2.x, p.y-p2.y);
+              if(d<100){
+                ctx.beginPath();
+                ctx.strokeStyle=`rgba(110,231,247,${0.1*(1-d/100)})`;
+                ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+              }
             }
           }
-        }
-        // dibujar partículas
-        ps.forEach((p)=>{
-          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-          ctx.fillStyle=`rgba(247,248,251,${collapsing?.9:.6})`; ctx.fill();
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+          ctx.fillStyle=`rgba(247,248,251,${p.alpha})`; ctx.fill();
         });
-        raf=requestAnimationFrame(draw);
+        raf=requestAnimationFrame(render);
       };
-      draw();
+      render();
 
       const texts=["Comprendiendo conocimiento…","Descubriendo relaciones…","Preparando contexto…","Lumora está lista."];
       const tEl=document.getElementById("splashText");
       let i=0;
-      const tick=setInterval(()=>{ i++; if(i<texts.length){ tEl.style.animation="none"; void tEl.offsetWidth; tEl.style.animation="textFade .8s ease"; tEl.textContent=texts[i]; } },1100);
+      const tick=setInterval(()=>{ i++; if(i<texts.length){ tEl.style.animation="none"; void tEl.offsetWidth; tEl.style.animation="textFade .8s ease"; tEl.textContent=texts[i]; } },1500);
 
-      setTimeout(()=>{ collapsing=true; }, 3400);
+      // Secuencia con los mismos tiempos del original: 4 textos × 1.5s, luego colapso
+      setTimeout(()=>{ collapsing=true; }, 6000);
       setTimeout(()=>{
         clearInterval(tick); cancelAnimationFrame(raf);
         const sp=document.getElementById("splash"); sp.classList.add("is-out");
         setTimeout(()=>{ sp.remove(); onDone(); }, 1000);
-      }, 4200);
+      }, 7200);
     },
   };
 
@@ -460,12 +469,18 @@
     CuotaMsg(reintentar){
       const wrap=dom.el("div",{class:"cuota"});
       const secs=Math.max(5, reintentar||60);
+      // Si el reintento es muy largo, probablemente es la cuota DIARIA, no la del minuto
+      const esDiaria = secs>300;
       const sub=dom.el("p",{class:"cuota__sub"});
       wrap.append(
         dom.el("div",{class:"cuota__ico",html:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.4 6.3L21 10l-5 4.2L17.5 21 12 17.3 6.5 21 8 14.2 3 10l6.6-.7z" stroke-linejoin="round"/></svg>'}),
-        dom.el("p",{class:"cuota__title",text:"Lumora está tomando aire"}),
+        dom.el("p",{class:"cuota__title",text:esDiaria?"Cuota diaria alcanzada":"Lumora está tomando aire"}),
         sub,
       );
+      if(esDiaria){
+        sub.innerHTML=`Se agotó el límite gratuito de hoy de Gemini. Se repone mañana. <br><span style="opacity:.7">Esto no genera ningún cobro.</span>`;
+        return wrap;
+      }
       let queda=secs;
       const pinta=()=>{ sub.textContent = queda>0 ? `Muchas consultas seguidas. Vuelve a intentar en ${queda}s…` : "Listo, ya puedes preguntar de nuevo."; };
       pinta();

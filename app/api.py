@@ -67,6 +67,69 @@ def ask(payload: Pregunta) -> dict:
     return asdict(respuesta)
 
 
+@app.get("/api/diagnostico")
+def diagnostico() -> dict:
+    """Prueba cada proveedor de LLM configurado y reporta su estado.
+
+    Con el sistema de fallback, esto revisa TODOS los proveedores de la cascada
+    y dice cual responde, cual esta sin cuota, y cual tiene error de config.
+    """
+    import os
+
+    from .llm import (
+        CuotaAgotada,
+        GeminiClient,
+        LLMError,
+        OpenAICompatClient,
+        _OPENAI_COMPAT,
+    )
+
+    def probar(nombre: str, cliente) -> dict:
+        try:
+            r = cliente.generate(system="Responde OK.", user="ping")
+            return {"proveedor": nombre, "estado": "ok", "detalle": r[:40]}
+        except CuotaAgotada as exc:
+            return {"proveedor": nombre, "estado": "sin_cuota", "reintentar_en": exc.reintentar_en}
+        except LLMError as exc:
+            return {"proveedor": nombre, "estado": "error", "detalle": str(exc)[:120]}
+
+    resultados = []
+    modo = settings.llm.lower()
+
+    if modo == "echo":
+        return {"modo": "echo", "detalle": "sin LLM real (modo de prueba)"}
+
+    # Determinar que proveedores revisar
+    orden = (os.environ.get("LLM_FALLBACK_ORDER", "") or "gemini,groq,cerebras").split(",") \
+        if modo == "fallback" else [modo]
+
+    for prov in (p.strip().lower() for p in orden if p.strip()):
+        try:
+            if prov == "gemini":
+                if not settings.gemini_api_key:
+                    resultados.append({"proveedor": "gemini", "estado": "sin_key"})
+                    continue
+                resultados.append(probar("gemini", GeminiClient(settings.gemini_api_key, settings.gemini_model)))
+            elif prov in _OPENAI_COMPAT:
+                base, env_key, modelo_def = _OPENAI_COMPAT[prov]
+                key = os.environ.get(env_key, "").strip()
+                if not key:
+                    resultados.append({"proveedor": prov, "estado": "sin_key"})
+                    continue
+                modelo = os.environ.get(f"{prov.upper()}_MODEL", "").strip() or modelo_def
+                resultados.append(probar(prov, OpenAICompatClient(key, base, modelo, prov)))
+        except Exception as exc:  # noqa: BLE001
+            resultados.append({"proveedor": prov, "estado": "error", "detalle": str(exc)[:120]})
+
+    hay_ok = any(r.get("estado") == "ok" for r in resultados)
+    return {
+        "modo": modo,
+        "operativo": hay_ok,
+        "resumen": "al menos un proveedor responde" if hay_ok else "ningun proveedor disponible ahora",
+        "proveedores": resultados,
+    }
+
+
 @app.get("/api/documents")
 def documents() -> dict:
     return {"documents": _agente().documentos()}

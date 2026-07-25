@@ -49,6 +49,19 @@ a 10 MB, y saneo de nombre para bloquear *path traversal* (`../../etc/passwd` se
 reduce a un nombre plano dentro de `data/`). Un archivo inválido se rechaza con
 mensaje claro; el resto se indexa igual.
 
+### Sistema de fallback multi-proveedor
+
+El modelo de lenguaje está detrás de una interfaz común, y sobre ella corre una
+**cascada de proveedores**: Lumora intenta responder con el primero (Gemini) y,
+si ese se queda sin cuota o falla, salta automáticamente al siguiente (Groq,
+luego Cerebras) sin que el usuario lo note. Solo si todos se agotan se muestra el
+aviso de cuota. Cada proveedor se activa solo si tiene su API key configurada, y
+el orden es ajustable por variable de entorno. El endpoint `/api/diagnostico`
+reporta el estado en vivo de cada proveedor de la cascada.
+
+Esto vuelve la aplicación resistente a los límites del *free tier*: haría falta
+agotar tres proveedores distintos para que deje de responder.
+
 ### Referencias y backstage de fuentes
 
 Cada afirmación de la respuesta lleva una referencia en línea (estilo cita
