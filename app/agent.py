@@ -19,7 +19,7 @@ from typing import Any
 
 from .chunking import Chunk, chunk_all
 from .embeddings import Embedder, build_embedder
-from .llm import LLMClient, LLMError, build_llm
+from .llm import CuotaAgotada, LLMClient, LLMError, build_llm
 from .loaders import Table, load_directory
 from .tabular import PlanInvalido, construir_prompt, ejecutar_plan, parsear_plan
 from .vectorstore import VectorStore, build_vector_store
@@ -54,10 +54,11 @@ class Fuente:
 @dataclass
 class Respuesta:
     answer: str
-    route: str                      # "tabular" | "rag" | "sin_datos"
+    route: str                      # "tabular" | "rag" | "sin_datos" | "cuota"
     sources: list[Fuente] = field(default_factory=list)
     table: list[dict[str, Any]] | None = None
     plan: dict[str, Any] | None = None
+    reintentar_en: int | None = None  # segundos, solo cuando route == "cuota"
 
 
 class Agent:
@@ -108,6 +109,8 @@ class Agent:
                 user=construir_prompt(pregunta, tablas_activas),
                 json_mode=True,
             )
+        except CuotaAgotada:
+            raise  # que ask() la convierta en respuesta de cuota, no caer a RAG
         except LLMError as exc:
             log.warning("no se pudo generar el plan tabular: %s", exc)
             return None
@@ -172,6 +175,13 @@ class Agent:
                 system=SISTEMA_RAG,
                 user=f"Fragmentos:\n\n{contexto}\n\n---\n\nPregunta: {pregunta}",
             )
+        except CuotaAgotada as exc:
+            return Respuesta(
+                answer="",
+                route="cuota",
+                sources=fuentes,
+                reintentar_en=exc.reintentar_en,
+            )
         except LLMError as exc:
             texto = f"No se pudo generar la respuesta: {exc}"
 
@@ -183,7 +193,10 @@ class Agent:
         pregunta = (pregunta or "").strip()
         if not pregunta:
             return Respuesta(answer="Escribe una pregunta.", route="sin_datos")
-        return self._intentar_tabular(pregunta) or self._rag(pregunta)
+        try:
+            return self._intentar_tabular(pregunta) or self._rag(pregunta)
+        except CuotaAgotada as exc:
+            return Respuesta(answer="", route="cuota", reintentar_en=exc.reintentar_en)
 
     def documentos(self) -> list[dict[str, Any]]:
         """Lista los archivos fuente indexados, su conteo de trozos y si estan activos."""

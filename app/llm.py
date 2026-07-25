@@ -22,6 +22,14 @@ class LLMError(RuntimeError):
     pass
 
 
+class CuotaAgotada(LLMError):
+    """El free tier de Gemini respondio 429. El frontend lo muestra bonito."""
+
+    def __init__(self, reintentar_en: int = 60) -> None:
+        self.reintentar_en = reintentar_en
+        super().__init__("cuota agotada")
+
+
 class LLMClient(Protocol):
     def generate(self, system: str, user: str, json_mode: bool = False) -> str: ...
 
@@ -55,7 +63,18 @@ class GeminiClient:
             raise LLMError(f"no se pudo contactar a Gemini: {exc}") from exc
 
         if respuesta.status_code == 429:
-            raise LLMError("cuota del free tier agotada (429). Espera un momento o revisa tus limites en AI Studio.")
+            # Google a veces sugiere cuanto esperar en el cuerpo (retryDelay).
+            reintentar = 60
+            try:
+                cuerpo = respuesta.json()
+                for detalle in cuerpo.get("error", {}).get("details", []):
+                    delay = detalle.get("retryDelay", "")
+                    if delay.endswith("s") and delay[:-1].isdigit():
+                        reintentar = int(delay[:-1])
+                        break
+            except Exception:  # noqa: BLE001
+                pass
+            raise CuotaAgotada(reintentar_en=reintentar)
         if respuesta.status_code >= 400:
             raise LLMError(f"Gemini respondio {respuesta.status_code}: {respuesta.text[:300]}")
 

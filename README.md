@@ -6,7 +6,7 @@ lenguaje natural citando de dónde salió cada dato, sin que nadie tenga que abr
 un archivo. La interfaz tiene una constelación viva que reacciona en tiempo real
 a lo que el motor está haciendo: buscar, converger, responder.
 
-**Demo en vivo:** `https://<TU-IP>.sslip.io` — desplegado en Oracle Cloud Infrastructure.
+**Demo en vivo:** https://160.34.221.57.sslip.io — desplegado en Oracle Cloud Infrastructure.
 
 <!-- Sustituye la línea de arriba por tu URL real y agrega la captura: -->
 <!-- ![Aplicación corriendo en OCI](docs/captura-oci.png) -->
@@ -48,6 +48,17 @@ tocar el disco: extensión en lista blanca (`.pdf .csv .txt .md`), tamaño acota
 a 10 MB, y saneo de nombre para bloquear *path traversal* (`../../etc/passwd` se
 reduce a un nombre plano dentro de `data/`). Un archivo inválido se rechaza con
 mensaje claro; el resto se indexa igual.
+
+### Referencias y backstage de fuentes
+
+Cada afirmación de la respuesta lleva una referencia en línea (estilo cita
+académica) con el icono e nombre de la estrella de origen. Al hacer clic se abre
+un panel lateral —el *backstage*— que muestra el fragmento exacto del que se
+tomó la información, resaltado. La respuesta se puede copiar con un botón que
+excluye las referencias, dejando solo el texto limpio.
+
+Cuando el free tier de Gemini responde 429 (limite temporal), la interfaz lo
+traduce a un aviso amable con cuenta regresiva en vez del error crudo.
 
 ### Encender y apagar estrellas
 

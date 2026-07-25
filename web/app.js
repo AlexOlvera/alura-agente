@@ -95,6 +95,75 @@
     ok(m){ this.show(m,"ok"); }, err(m){ this.show(m,"err",4200); }, info(m){ this.show(m,"info"); },
   };
 
+  /* ---------------- Backstage: panel de origen de una fuente ---------------- */
+  const Backstage = {
+    init() {
+      this.el=document.getElementById("backstage");
+      this.icon=document.getElementById("bsIcon");
+      this.name=document.getElementById("bsName");
+      this.loc=document.getElementById("bsLoc");
+      this.content=document.getElementById("bsContent");
+      document.getElementById("bsClose").addEventListener("click",()=>this.close());
+      this.el.querySelector(".backstage__veil").addEventListener("click",()=>this.close());
+      document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&this.el.classList.contains("is-open")) this.close(); });
+    },
+    _ICO:{
+      pdf:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+      data:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
+    },
+    /** Abre el panel mostrando el fragmento de esta fuente. s = {source, locator, excerpt, ...} */
+    open(s) {
+      const kind=extKind(s.source);
+      this.icon.className="bs__ficon "+kind;
+      this.icon.innerHTML=this._ICO[kind]||this._ICO.pdf;
+      this.name.textContent=s.source;
+      this.name.title=s.source;
+      this.loc.textContent=s.locator||"";
+      dom.clear(this.content);
+      // Mostramos el fragmento exacto que se uso, resaltado.
+      const ex=s.excerpt||"(sin extracto disponible)";
+      this.content.append(dom.el("div",{class:"doc-view"},[
+        dom.el("p",{html:`<mark>${dom.esc(ex)}</mark>`}),
+      ]));
+      this.el.classList.add("is-open");
+    },
+    close(){ this.el.classList.remove("is-open"); },
+  };
+
+  /* ---------------- Tooltip global (montado en body, nunca recortado) ---------------- */
+  const Tip = {
+    el:null,
+    _ensure() {
+      if(this.el) return;
+      this.el=document.createElement("div");
+      this.el.className="tip-float";
+      document.body.appendChild(this.el);
+    },
+    /** Liga un tooltip a un elemento. html = contenido. */
+    bind(target, html) {
+      this._ensure();
+      const show=()=>{
+        this.el.innerHTML=html;
+        this.el.classList.add("is-shown");
+        const r=target.getBoundingClientRect();
+        const tw=this.el.offsetWidth, th=this.el.offsetHeight;
+        let left=r.left + r.width/2 - tw/2;
+        left=Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+        let top=r.top - th - 9;
+        if(top < 10) top = r.bottom + 9;  // si no cabe arriba, va abajo
+        this.el.style.left=left+"px";
+        this.el.style.top=top+"px";
+      };
+      const hide=()=>this.el.classList.remove("is-shown");
+      target.addEventListener("mouseenter",show);
+      target.addEventListener("mouseleave",hide);
+      target.addEventListener("focus",show);
+      target.addEventListener("blur",hide);
+      // si se hace scroll o clic, ocultar (evita tooltips flotando fuera de lugar)
+      window.addEventListener("scroll",hide,true);
+    },
+  };
+
   /* ---------------- Logo (controlador de estado) ---------------- */
   const Logo = {
     mount(elId) { const e = document.getElementById(elId); if (e) e.innerHTML = dom.svgLogo(); return e; },
@@ -199,11 +268,28 @@
       const ps=Array.from({length:180},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*1.5+.5}));
       const draw=()=>{
         ctx.fillStyle="rgba(9,11,18,0.2)"; ctx.fillRect(0,0,W,H);
+        // mover primero
         ps.forEach((p)=>{
           if(collapsing){ p.x+=(W/2-p.x)*.05; p.y+=(H/2-p.y)*.05; }
           else { p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; }
+        });
+        // dibujar conexiones (como en la constelación del fondo)
+        const dist = collapsing ? 140 : 110;
+        for(let a=0;a<ps.length;a++){
+          for(let b=a+1;b<ps.length;b++){
+            const dx=ps[a].x-ps[b].x, dy=ps[a].y-ps[b].y, d=Math.hypot(dx,dy);
+            if(d<dist){
+              const op=(collapsing?.5:.28)*(1-d/dist);
+              ctx.strokeStyle=`rgba(140,107,255,${op})`;
+              ctx.lineWidth=collapsing?1.2:.6;
+              ctx.beginPath(); ctx.moveTo(ps[a].x,ps[a].y); ctx.lineTo(ps[b].x,ps[b].y); ctx.stroke();
+            }
+          }
+        }
+        // dibujar partículas
+        ps.forEach((p)=>{
           ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-          ctx.fillStyle=`rgba(140,107,255,${collapsing?.9:.5})`; ctx.fill();
+          ctx.fillStyle=`rgba(247,248,251,${collapsing?.9:.6})`; ctx.fill();
         });
         raf=requestAnimationFrame(draw);
       };
@@ -282,15 +368,9 @@
         html:starSvg+`<span class="starbtn__lbl">${activa?"Brillando":"Apagada"}</span>`,
         onClick:(e)=>{ e.stopPropagation(); onToggle(doc.nombre, !activa, star); }});
 
-      // "fragmentos" con tooltip posicionado por JS (fixed) para no empujar scroll
-      const tip = dom.el("span",{class:"frag__tip",html:`Cada estrella se divide en <strong>fragmentos</strong>: los pedazos en que Lumora la lee para encontrar respuestas. Más fragmentos = más contenido.`});
-      const frag = dom.el("span",{class:"frag",tabindex:"0"},[ document.createTextNode(`${doc.fragmentos} fragmentos`), tip ]);
-      const showTip=()=>{ const r=frag.getBoundingClientRect(); tip.style.left=Math.max(12,Math.min(r.left, window.innerWidth-222))+"px"; tip.style.top=(r.top-tip.offsetHeight-8)+"px"; tip.classList.add("is-shown"); };
-      const hideTip=()=>tip.classList.remove("is-shown");
-      frag.addEventListener("mouseenter",()=>{ tip.classList.add("is-shown"); requestAnimationFrame(showTip); });
-      frag.addEventListener("mouseleave",hideTip);
-      frag.addEventListener("focus",()=>{ tip.classList.add("is-shown"); requestAnimationFrame(showTip); });
-      frag.addEventListener("blur",hideTip);
+      // "fragmentos" con tooltip global (montado en body, nunca recortado)
+      const frag = dom.el("span",{class:"frag",tabindex:"0"},[ document.createTextNode(`${doc.fragmentos} fragmentos`) ]);
+      Tip.bind(frag, `Cada estrella se divide en <strong>fragmentos</strong>: los pedazos en que Lumora la lee para encontrar respuestas. Más fragmentos = más contenido.`);
 
       const name = dom.el("div",{class:"card__name"+(activa?"":" is-off"),text:doc.nombre,title:doc.nombre});
       return dom.el("li",{},[ dom.el("div",{class:"card"},[
@@ -312,14 +392,60 @@
       ]);
     },
     UserMsg(text){ return dom.el("div",{class:"msg msg--user"},[ dom.el("div",{class:"bubble-user",text}) ]); },
-    Answer(text){
-      const html=dom.esc(text).replace(/\[(\d{1,2})\]/g,'<span class="cite">$1</span>');
-      return dom.el("div",{class:"ai__text",html});
+
+    // Markdown basico -> HTML seguro. Convierte **negrita**, *cursiva*, saltos.
+    md(texto){
+      let h=dom.esc(texto);
+      h=h.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");   // **negrita**
+      h=h.replace(/(^|[^*])\*(?!\*)(.+?)\*(?!\*)/g,"$1<em>$2</em>"); // *cursiva*
+      h=h.replace(/`([^`]+)`/g,"<code>$1</code>");           // `codigo`
+      h=h.replace(/\n/g,"<br>");                              // saltos de linea
+      return h;
+    },
+
+    // Respuesta: procesa Markdown y reemplaza [n] por referencias APA inline.
+    // 'sources' da el nombre de archivo de cada cita; onOpen abre el backstage.
+    Answer(text, sources, onOpen){
+      const cont=dom.el("div",{class:"ai__text"});
+      const porN={}; (sources||[]).forEach((s)=>{ porN[s.n]=s; });
+      // Partimos el texto por las marcas [n] para intercalar referencias reales
+      const html=Component.md(text);
+      const partes=html.split(/(\[\d{1,2}\])/g);
+      partes.forEach((p)=>{
+        const m=p.match(/^\[(\d{1,2})\]$/);
+        if(m && porN[+m[1]]){
+          cont.append(Component.Ref(porN[+m[1]], onOpen));
+        } else if(p){
+          const span=document.createElement("span"); span.innerHTML=p; cont.append(span);
+        }
+      });
+      return cont;
+    },
+
+    // Referencia inline estilo APA: icono + nombre corto + tooltip, clickeable
+    Ref(s, onOpen){
+      const kind=extKind(s.source);
+      const corto=Component._nombreCorto(s.source);
+      const ico=kind==="data"||kind==="csv" ? ICONS.data : (kind==="pdf"?ICONS.doc:ICONS.doc);
+      const ref=dom.el("span",{class:"ref",role:"button",tabindex:"0",title:`${s.source} · ${s.locator}`,
+        onClick:()=>onOpen&&onOpen(s), onKeydown:(e)=>{ if(e.key==="Enter"){e.preventDefault();onOpen&&onOpen(s);} }},[
+        dom.el("span",{class:`ref__ico ${kind}`,html:ico}),
+        dom.el("span",{class:"ref__txt",text:corto}),
+      ]);
+      return ref;
+    },
+    _nombreCorto(nombre){
+      // "politica_interna_de_almacen_rev4.pdf" -> "política interna…"
+      let base=nombre.replace(/\.[^.]+$/,"");            // sin extension
+      base=base.replace(/[_-]+/g," ").trim();             // guiones -> espacios
+      const palabras=base.split(" ");
+      let corto=palabras.slice(0,2).join(" ");
+      if(palabras.length>2 || corto.length>18) corto=corto.slice(0,18).trim()+"…";
+      return corto;
     },
     Meta(route,count){
       const cls = route==="tabular" ? "pill pill--tab" : "pill pill--rag";
       const kids=[ dom.el("span",{class:cls,text:ROUTE[route]||route}) ];
-      if(count) kids.push(dom.el("span",{text:`${count} fuente${count===1?"":"s"}`}));
       return dom.el("div",{class:"ai__meta"},kids);
     },
     Table(rows){
@@ -330,26 +456,24 @@
         dom.el("tbody",{},rows.map((r)=>dom.el("tr",{},cols.map((c)=>dom.el("td",{text:r[c]})))))
       ])]);
     },
-    Origin(s){
-      return dom.el("div",{class:"origin",title:`${s.source} · ${s.locator}`},[
-        dom.el("span",{class:"origin__n",text:s.n}),
-        dom.el("span",{class:"origin__ref",text:s.source}),
-        s.score?dom.el("span",{class:"origin__score",text:s.score.toFixed(2)}):null,
-      ]);
-    },
-    Origins(sources){
-      if(!sources||!sources.length) return null;
-      const n=sources.length;
-      const list=dom.el("div",{class:"origins__list"}, sources.map(Component.Origin));
-      const chev=dom.el("span",{class:"origins__chev",html:'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'});
-      const wrap=dom.el("div",{class:"origins"});
-      const toggle=dom.el("button",{class:"origins__toggle",type:"button",onClick:()=>wrap.classList.toggle("is-open")},[
-        chev, dom.el("span",{text:`${n} estrella${n===1?"":"s"} de origen`}),
-      ]);
-      wrap.append(toggle,list);
+    // Mensaje de cuota agotada, bonito, con contador de reintento
+    CuotaMsg(reintentar){
+      const wrap=dom.el("div",{class:"cuota"});
+      const secs=Math.max(5, reintentar||60);
+      const sub=dom.el("p",{class:"cuota__sub"});
+      wrap.append(
+        dom.el("div",{class:"cuota__ico",html:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.4 6.3L21 10l-5 4.2L17.5 21 12 17.3 6.5 21 8 14.2 3 10l6.6-.7z" stroke-linejoin="round"/></svg>'}),
+        dom.el("p",{class:"cuota__title",text:"Lumora está tomando aire"}),
+        sub,
+      );
+      let queda=secs;
+      const pinta=()=>{ sub.textContent = queda>0 ? `Muchas consultas seguidas. Vuelve a intentar en ${queda}s…` : "Listo, ya puedes preguntar de nuevo."; };
+      pinta();
+      const timer=setInterval(()=>{ queda-=1; pinta(); if(queda<=0){ clearInterval(timer); wrap.classList.add("is-ready"); } },1000);
       return wrap;
     },
-    AiMsg() {
+
+    AiMsg(onOpenSource) {
       const logo=dom.el("div",{class:"logo ai__logo",'data-size':"sm"}); logo.innerHTML=dom.svgLogo(); logo.classList.add("logo-processing");
       const content=dom.el("div",{class:"ai__content"},[ dom.el("div",{class:"typing"},[dom.el("span"),dom.el("span"),dom.el("span")]) ]);
       const node=dom.el("div",{class:"msg msg--ai"},[ dom.el("div",{class:"ai"},[logo,content]) ]);
@@ -358,17 +482,30 @@
         resolve(r){
           logo.classList.remove("logo-processing"); logo.classList.add("logo-responding");
           dom.clear(content);
-          // Recuadro que envuelve meta + texto + tabla (suma sin quitar el logo lateral)
+          // Cuota agotada: mensaje bonito, sin recuadro normal
+          if(r.route==="cuota"){ content.append(Component.CuotaMsg(r.reintentar_en)); return; }
           const bubble=dom.el("div",{class:"ai__bubble"});
+          // Boton copiar (copia solo el texto, sin referencias)
+          const copyBtn=dom.el("button",{class:"ai__copy",type:"button",title:"Copiar respuesta",
+            html:'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10" stroke-linecap="round"/></svg><span>Copiar</span>'});
+          copyBtn.addEventListener("click",()=>Component._copiar(r.answer, copyBtn));
+          bubble.append(copyBtn);
           bubble.append(Component.Meta(r.route,(r.sources||[]).length));
-          bubble.append(Component.Answer(r.answer));
+          bubble.append(Component.Answer(r.answer, r.sources, onOpenSource));
           const t=Component.Table(r.table); if(t) bubble.append(t);
           content.append(bubble);
-          // Estrellas de origen: colapsadas por defecto, fuera del recuadro
-          const o=Component.Origins(r.sources); if(o) content.append(o);
         },
         fail(msg){ logo.classList.remove("logo-processing"); dom.clear(content); content.append(dom.el("div",{class:"err-box",text:msg})); },
       };
+    },
+    _copiar(texto, btn){
+      // Limpia las marcas [n] y el Markdown para copiar texto plano legible
+      const limpio=(texto||"").replace(/\[\d{1,2}\]/g,"").replace(/\*\*(.+?)\*\*/g,"$1").replace(/\*(.+?)\*/g,"$1").replace(/`([^`]+)`/g,"$1").replace(/\s+/g," ").trim();
+      navigator.clipboard.writeText(limpio).then(()=>{
+        const lbl=btn.querySelector("span"); const orig=lbl.textContent;
+        btn.classList.add("done"); lbl.textContent="Copiado";
+        setTimeout(()=>{ btn.classList.remove("done"); lbl.textContent=orig; },1600);
+      }).catch(()=>Toast.err("No se pudo copiar"));
     },
   };
 
@@ -399,7 +536,7 @@
       Logo.mount("brandLogo"); Logo.mount("heroLogo");
       Constellation.init("constellation");
       Constellation.setState("idle"); Logo.setState("idle");
-      Modal.init(); Toast.init();
+      Modal.init(); Toast.init(); Backstage.init();
       this._cacheEls(); this._wire(); this._renderHero();
       this.health(); this.refreshDocs();
     },
@@ -548,7 +685,7 @@
       if(!this.started){ this.started=true; this.hero.classList.add("is-hidden"); this.thread.classList.remove("is-hidden"); }
 
       this.thread.append(Component.UserMsg(q));
-      const ai=Component.AiMsg();
+      const ai=Component.AiMsg((s)=>Backstage.open(s));
       this.thread.append(ai.node);
       ai.node.scrollIntoView({behavior:"smooth",block:"end"});
 
