@@ -86,7 +86,7 @@ por tipo (PDF, CSV, TXT, MD).
 El fondo es una constelación de partículas en `<canvas>` cuyo comportamiento
 está atado al estado **real** del motor, no a temporizadores:
 - **idle** — respira lento mientras espera.
-- **processing** — se acelera cuando Gemini está buscando de verdad.
+- **processing** — se acelera cuando el modelo está buscando de verdad.
 - **responding** — converge e ilumina en el instante en que llega la respuesta.
 
 El número de partículas crece con la cantidad de documentos cargados. El logo
@@ -145,7 +145,7 @@ data/*.pdf,csv,md
   chunking.py ─── Chunk (corte por oración + solape)  │
       │                                              │
       ▼                                              │
-  embeddings.py ─ Embedder  {local | gemini | hash}   │
+  embeddings.py ─ Embedder  {gemini | local | hash}   │
       │                                              │
       ▼                                              │
   vectorstore.py  VectorStore {numpy | oracle}        │
@@ -155,7 +155,7 @@ data/*.pdf,csv,md
                   agent.py  ── enruta, recupera, redacta, cita
                      │
                      ▼
-                  api.py (FastAPI) ── /api/ask · /api/health
+                  api.py (FastAPI) ── /api/ask · /api/health · /api/diagnostico
                      │
                      ▼
                   web/ (HTML + CSS + JS, sin framework)
@@ -170,8 +170,9 @@ sabe cuál implementación está activa.
 | Decisión | Por qué |
 |---|---|
 | Vector store en NumPy, no FAISS | Para corpus de hasta ~100k trozos una multiplicación matriz-vector es instantánea. Cero dependencias nativas, que es lo que importa al desplegar en una VM ARM del free tier. |
-| Embeddings locales por defecto | `sentence-transformers` en CPU no consume cuota ni requiere API key. La ingesta es un proceso de una sola vez; que tarde no importa. |
-| Gemini por REST, no por SDK | El endpoint `generateContent` es estable. Una dependencia menos es una cosa menos que puede romperse en el despliegue. |
+| Embeddings por API (Gemini) | Evita cargar `sentence-transformers` en la VM del free tier (2 OCPU): sin ese peso, el arranque es liviano. La ingesta es un proceso de una sola vez, así que la latencia de red no molesta. El modo `local` sigue disponible por si se prefiere no depender de la API. |
+| Cascada de proveedores detrás de una interfaz | El modelo está detrás de `LLMClient`, así que sumar proveedores no toca el resto del código. La cascada Gemini→Groq absorbe los límites del free tier sin que el usuario lo note. |
+| Modelo por REST, no por SDK | Los endpoints (`generateContent` de Gemini, `/chat/completions` de Groq) son estables. Una dependencia menos es una cosa menos que puede romperse en el despliegue. |
 | El agente se construye una vez, en el `lifespan` | Cargar el índice y el modelo por petición tumbaría una VM de 2 OCPU con el primer usuario concurrente. |
 | Frontend sin framework | Tres archivos, sin build step. Se despliega copiando la carpeta. |
 
@@ -210,7 +211,7 @@ Con los documentos de ejemplo incluidos (`data/politica_interna.md` y
 
 | Pregunta | Ruta | Respuesta |
 |---|---|---|
-| ¿Cuál fue el producto más vendido en diciembre de 2015? | `tabular` | Monitor 27 4K, con 968 unidades, muy por encima del segundo lugar (Laptop Pro 14, 73 unidades). |
+| ¿Cuál fue el producto más vendido en diciembre de 2015? | `tabular` | Monitor 27 4K, con 968 unidades. |
 | ¿Qué lenguajes se usan en el back-end de la plataforma de ventas? | `rag` | Java 21 con Spring Boot, más servicios auxiliares en Python 3.12 `[1]`. |
 | ¿Cuántos días hay que ir a la oficina? | `rag` | Mínimo dos días presenciales por semana, martes y jueves `[1]`. |
 | ¿Puedo conectarme desde el WiFi del aeropuerto? | `rag` | No sin VPN corporativa; está prohibido conectarse a sistemas internos desde redes públicas `[1]`. |
@@ -230,6 +231,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env          # pon tu GEMINI_API_KEY (gratis en aistudio.google.com)
+                              # opcional: GROQ_API_KEY para activar la cascada de fallback
 
 # coloca tus documentos en data/  (.pdf .csv .md .txt)
 python -m app.ingest          # construye el índice
@@ -273,10 +275,14 @@ Let's Encrypt no puede emitir el certificado.
 
 | Variable | Valores | Default | Qué hace |
 |---|---|---|---|
-| `LLM` | `gemini` `echo` | `gemini` | Proveedor de generación |
+| `LLM` | `fallback` `gemini` `groq` `cerebras` `echo` | `fallback` | Proveedor de generación (o cascada) |
+| `LLM_FALLBACK_ORDER` | lista separada por comas | `gemini,groq,cerebras` | Orden de la cascada; solo se usan los que tengan API key |
 | `GEMINI_API_KEY` | — | — | Key de Google AI Studio |
-| `GEMINI_MODEL` | — | `gemini-2.5-flash` | Modelo de generación |
-| `EMBEDDER` | `local` `gemini` `hash` | `local` | Proveedor de embeddings |
+| `GEMINI_MODEL` | — | `gemini-2.5-flash-lite` | Modelo de Gemini (Flash-Lite tiene mejor cuota gratis) |
+| `GROQ_API_KEY` | — | — | Key de Groq (console.groq.com) |
+| `GROQ_MODEL` | — | `llama-3.3-70b-versatile` | Modelo de Groq |
+| `CEREBRAS_API_KEY` | — | — | Key de Cerebras (opcional) |
+| `EMBEDDER` | `gemini` `local` `hash` | `gemini` | Proveedor de embeddings |
 | `VECTOR_STORE` | `numpy` `oracle` | `numpy` | Almacén de vectores |
 | `TOP_K` | entero | `5` | Fragmentos recuperados por consulta |
 | `CHUNK_SIZE` | entero | `900` | Tamaño objetivo del trozo, en caracteres |
@@ -293,12 +299,14 @@ Todo el proyecto corre en niveles gratuitos permanentes:
 |---|---|
 | OCI Compute (Always Free) | $0 |
 | Google AI Studio (free tier) | $0 |
-| Embeddings locales | $0 |
+| Groq (free tier) | $0 |
+| Embeddings (Gemini free tier) | $0 |
 | Certificado TLS (Let's Encrypt vía Caddy) | $0 |
 | Hostname (`sslip.io`) | $0 |
 
-El free tier de Gemini tiene tope de peticiones por minuto y por día; el sistema
-detecta el `429` y lo reporta como tal en vez de fallar en silencio.
+Los free tier tienen tope de peticiones por minuto y por día. Cuando un proveedor
+responde `429`, la cascada salta al siguiente automáticamente; solo si todos se
+agotan se muestra el aviso de cuota al usuario.
 
 ---
 
@@ -310,9 +318,9 @@ alura-agente/
 │   ├── config.py       Configuración por variables de entorno
 │   ├── loaders.py      PDF, CSV y texto → Passage + Table
 │   ├── chunking.py     Troceado por oración con solapamiento
-│   ├── embeddings.py   Embedder: local | gemini | hash
+│   ├── embeddings.py   Embedder: gemini | local | hash
 │   ├── vectorstore.py  VectorStore: numpy | oracle
-│   ├── llm.py          LLMClient: gemini | echo
+│   ├── llm.py          LLMClient: fallback | gemini | groq | cerebras | echo
 │   ├── tabular.py      Plan JSON validado → pandas
 │   ├── agent.py        Enrutado, recuperación, redacción, citas
 │   ├── ingest.py       Construcción del índice
